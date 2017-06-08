@@ -36,6 +36,29 @@ export class GetStartedPage {
     element.className += " active";
   }
 
+  navigateToHomePage(): void {
+
+    if(this.nickname != "" && this.nickname != null) { this.storage.set('nickname', this.nickname); }
+    this.storage.set('colour', this.colour);
+
+    // How to navigate and send information to next page
+    // this.navCtrl.push('HomePage', {nickname: this.nickname, colour: "#AAA"});
+
+    this.navCtrl.setRoot("HomePage");
+  }
+
+  // If the user has used the app before, skip to the home page
+  ionViewWillEnter() {
+
+    // Delete for production
+    this.storage.clear();
+
+    this.storage.length().then( length => {
+      if(length >= 2)
+        this.navCtrl.setRoot("HomePage");
+    });
+  }
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad GetStartedPage');
   }
