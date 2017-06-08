@@ -8,6 +8,6 @@
 <ion-content padding>
   <p>Hello, {{ nickname }}</p>
 
-  <button ion-button>Create Session</button>
-  <button ion-button>Join Session</button>
+  <button ion-button (click)="openPage('CreateSessionPage')">Create Session</button>
+  <button ion-button (click)="openPage('JoinSessionPage')">Join Session</button>
 </ion-content>
