@@ -82,3 +82,31 @@ $colors: (
 
 @import "roboto";
 @import "noto-sans";
+
+// Shared Styles
+$background-color:  map-get($colors, "secondary");
+$text-color:        map-get($colors, "light");
+
+.grey-text { color: map-get($colors, "accents02") !important; }
+
+body ion-list .input-box {
+  width: 70% !important;
+  border-radius: 10px;
+  border-bottom: none !important;
+  box-shadow: 0 0px 0 0 !important;
+  margin: 0 auto !important;
+  max-width: 300px;
+}
+
+.split-bill-nav img {
+  width: 50px;
+  right: 0;
+  top: 0;
+  margin: 3px 3px 0px 0px;
+  position: absolute;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal !important;
+  font-family: 'roboto' !important;
+}
