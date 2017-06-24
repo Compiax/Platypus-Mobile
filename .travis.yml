@@ -9,6 +9,5 @@ install:
   - npm install
   - npm install -g cordova
   - npm install -g ionic
-  - ionic platform add android
 script:
-  - ionic cordova build android
+  - karma start karma.conf.js --single-run
