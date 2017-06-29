@@ -1,0 +1,13 @@
+sudo: required
+language: node_js
+node_js:
+  - "6"
+cache:
+  directories:
+    - "node_modules"
+install:
+  - npm install
+  - npm install -g cordova
+  - npm install -g ionic
+script:
+  - karma start karma.conf.js --single-run
