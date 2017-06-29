@@ -7,6 +7,9 @@ import { StatusBar } from '@ionic-native/status-bar';
 // Store user data locally
 import { IonicStorageModule } from '@ionic/storage';
 
+// Access mobile device camera
+import { Camera } from '@ionic-native/camera';
+
 import { MyApp } from './app.component';
 import { GetStartedPage } from '../pages/get-started/get-started';
 
@@ -28,6 +31,7 @@ import { GetStartedPage } from '../pages/get-started/get-started';
   providers: [
     StatusBar,
     SplashScreen,
+    Camera,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

@@ -9,14 +9,15 @@ export class HttpProvider {
     console.log("Http Provider Instantiated");
   }
 
-  createSession() {
-    let responseJSON; // responseJSON.data.someVariable
+  createSession(imageData) {
+    let responseJSON; // responseJSON.data.session_id
 
-    this.http.get('http://splitbill.com/createSession')
+    this.http.post('http://splitbill.com/createSession', imageData)
       .subscribe(res => {
         responseJSON = res.json();
       }, (err) => {
         console.log(err);
+        return false;
       });
 
     return responseJSON;
@@ -24,15 +25,16 @@ export class HttpProvider {
 
   joinSession(session_id) {
 	  let data = { id: session_id };
-    let responseJSON; // responseJSON.data.someVariable
+    let responseJSON; // responseJSON.data.user_id
 
     this.http.post('http://splitbill.com/joinSession', JSON.stringify(data))
       .subscribe(res => {
       	responseJSON = res.json();
       }, (err) => {
       	console.log(err);
+        return false;
       });
-      
+
     return responseJSON;
   }
 
