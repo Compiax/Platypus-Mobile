@@ -9,6 +9,7 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 @Component({
   selector: 'page-create-session',
   templateUrl: 'create-session.html',
+  providers:[HttpProvider]
 })
 
 export class CreateSessionPage {
@@ -21,7 +22,7 @@ export class CreateSessionPage {
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
     private camera: Camera,
-    private httpProvider:HttpProvider) {
+    private httpProvider: HttpProvider) {
 
       console.log("Initialize loading spinner");
       this.loading = this.loadingCtrl.create({
