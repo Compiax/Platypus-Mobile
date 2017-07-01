@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 
+const URL = 'http://localhost:3000';
+
 @Injectable()
 export class HttpProvider {
 
@@ -9,10 +11,10 @@ export class HttpProvider {
     console.log("Http Provider Instantiated");
   }
 
-  createSession(imageData) {
+  createSession(nickname, color) {
     let responseJSON; // responseJSON.data.session_id
 
-    this.http.post('http://splitbill.com/createSession', imageData)
+    this.http.post(URL+'/createSession', {nickname: nickname, color: color})
       .subscribe(res => {
         responseJSON = res.json();
       }, (err) => {
@@ -27,7 +29,7 @@ export class HttpProvider {
 	  let data = { id: session_id };
     let responseJSON; // responseJSON.data.user_id
 
-    this.http.post('http://splitbill.com/joinSession', JSON.stringify(data))
+    this.http.post(URL+'/joinSession', JSON.stringify(data))
       .subscribe(res => {
       	responseJSON = res.json();
       }, (err) => {
@@ -36,6 +38,10 @@ export class HttpProvider {
       });
 
     return responseJSON;
+  }
+
+  sendSessionImage(imageData) {
+    // @todo Send image data to API
   }
 
 }

@@ -4,6 +4,8 @@ import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-an
 import { HttpProvider } from '../../providers/HttpProvider';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 
+import { Storage } from '@ionic/storage';
+
 // @todo Add try again button in interface to relaunch the camera
 @IonicPage()
 @Component({
@@ -21,6 +23,7 @@ export class CreateSessionPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
+    private storage: Storage,
     private camera: Camera,
     private httpProvider: HttpProvider) {
 
@@ -62,19 +65,30 @@ export class CreateSessionPage {
 
     console.log("CreateSessionPage View Did Enter");
 
-    if(this.captureImage()){
+    this.loading.present();
+    console.log("Call http provider's createSession");
+    // var session_id = this.httpProvider.createSession(this.imageData).data.session_id;
+    var session_vars = this.httpProvider.createSession(this.storage.get("nickname"), this.storage.get("colour"));
+    this.loading.dismiss();
 
-      this.loading.present();
-      console.log("Call http provider's createSession");
-      var session_id = this.httpProvider.createSession(this.imageData).data.session_id;
-      this.loading.dismiss();
+    console.log("createSession Response JSON: "+session_vars);
+    var session_id = session_vars.data.attributes.session_id;
+    var user_id = session_vars.data.attributes.user_id;
+    this.storage.set('session_id', session_id);
+    this.storage.set('user_id', user_id);
 
-      if(session_id){
-        console.log("Redirecting to JoinSessionPage");
-        this.navCtrl.push('JoinSessionPage', {session_id: session_id});
-      } else {
-        console.log("Invalid Session id. Http provider must've encountered a problem.");
-      }
+    // @todo If createSession was successful
+    if(this.captureImage()) {
+      // @todo Check if error occurs
+      this.httpProvider.sendSessionImage(this.imageData);
+    }
+
+    // @todo Check if all of the above was successful
+    if(session_id){
+      console.log("Redirecting to JoinSessionPage");
+      // this.navCtrl.push('SessionPage', {session_id: session_id});
+    } else {
+      console.log("Invalid Session id. Http provider must've encountered a problem.");
     }
   }
 
