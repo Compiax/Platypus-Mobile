@@ -68,14 +68,23 @@ export class CreateSessionPage {
     this.loading.present();
     console.log("Call http provider's createSession");
     // var session_id = this.httpProvider.createSession(this.imageData).data.session_id;
-    var session_vars = this.httpProvider.createSession(this.storage.get('nickname').then((data) => {return data}), this.storage.get('colour').then((data) => {return data}));
-    this.loading.dismiss();
+    this.storage.get('nickname').then((nickname) => {
+      console.log("trace "+nickname);
+      this.storage.get('colour').then((color) => {
+        console.log("trace "+color);
 
-    console.log("createSession Response JSON: "+session_vars);
-    var session_id = session_vars.data.attributes.session_id;
-    var user_id = session_vars.data.attributes.user_id;
-    this.storage.set('session_id', session_id);
-    this.storage.set('user_id', user_id);
+        console.log("Call http provider's createSession");
+        var session_vars = this.httpProvider.createSession(nickname, color);
+        this.loading.dismiss();
+
+        console.log("createSession Response JSON: "+session_vars);
+        var session_id = session_vars.data.attributes.session_id;
+        var user_id = session_vars.data.attributes.user_id;
+        this.storage.set('session_id', session_id);
+        this.storage.set('user_id', user_id);
+
+      });
+    });
 
     // @todo If createSession was successful
     if(this.captureImage()) {
@@ -84,12 +93,12 @@ export class CreateSessionPage {
     }
 
     // @todo Check if all of the above was successful
-    if(session_id){
-      console.log("Redirecting to JoinSessionPage");
-      // this.navCtrl.push('SessionPage', {session_id: session_id});
-    } else {
-      console.log("Invalid Session id. Http provider must've encountered a problem.");
-    }
+    // if(session_id){
+    //   console.log("Redirecting to JoinSessionPage");
+    //   // this.navCtrl.push('SessionPage', {session_id: session_id});
+    // } else {
+    //   console.log("Invalid Session id. Http provider must've encountered a problem.");
+    // }
   }
 
 }

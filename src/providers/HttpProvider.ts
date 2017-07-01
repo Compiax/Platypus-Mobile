@@ -14,7 +14,7 @@ export class HttpProvider {
   createSession(nickname, color) {
     let responseJSON; // responseJSON.data.session_id
 
-    console.log('Calling '+URL+'/createSession from HttpProvider');
+    console.log('Calling '+URL+'/createSession from HttpProvider and sending '+nickname+' and '+color);
     this.http.post(URL+'/createSession', {"nickname": nickname, "color": color})
       .subscribe(res => {
         console.log("Received "+res+" from API");
