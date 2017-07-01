@@ -81,6 +81,8 @@ export class CreateSessionPage {
           console.log("createSession Response JSON: "+session_vars.json());
           var session_id = session_vars.json().data.attributes.session_id;
           var user_id = session_vars.json().data.attributes.user_id;
+          console.log("createSession Response JSON session_id: "+session_id);
+          console.log("createSession Response JSON user_id: "+user_id);
           this.storage.set('session_id', session_id);
           this.storage.set('user_id', user_id);
         });
