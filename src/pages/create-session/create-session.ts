@@ -68,21 +68,24 @@ export class CreateSessionPage {
     this.loading.present();
     console.log("Call http provider's createSession");
     // var session_id = this.httpProvider.createSession(this.imageData).data.session_id;
-    this.storage.get('nickname').then((nickname) => {
+    this.storage.get('nickname').then(nickname => {
       console.log("trace "+nickname);
-      this.storage.get('colour').then((color) => {
+      this.storage.get('colour').then(color => {
         console.log("trace "+color);
 
         console.log("Call http provider's createSession");
-        var session_vars = this.httpProvider.createSession(nickname, color);
-        this.loading.dismiss();
+        var session_vars;
+        new Promise(this.httpProvider.createSession(nickname, color)).then(s_vars => {
+          session_vars = s_vars;
 
-        console.log("createSession Response JSON: "+session_vars);
-        var session_id = session_vars.data.attributes.session_id;
-        var user_id = session_vars.data.attributes.user_id;
-        this.storage.set('session_id', session_id);
-        this.storage.set('user_id', user_id);
+          this.loading.dismiss();
 
+          console.log("createSession Response JSON: "+session_vars);
+          var session_id = session_vars.data.attributes.session_id;
+          var user_id = session_vars.data.attributes.user_id;
+          this.storage.set('session_id', session_id);
+          this.storage.set('user_id', user_id);
+        });
       });
     });
 
