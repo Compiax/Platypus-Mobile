@@ -18,7 +18,7 @@ export class HttpProvider {
     let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
     let options = new RequestOptions({ headers: headers });
     let data = "nickname="+nickname+"&color="+color;
-    let responseJSON = this.http.post(URL+'/createSession', {data},  options);
+    let responseJSON = this.http.post(URL+'/createSession', data,  options);
 
     console.log('Returning JSON response from HttpProvider');
     return responseJSON;
