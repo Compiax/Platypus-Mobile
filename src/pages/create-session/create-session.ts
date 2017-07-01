@@ -74,15 +74,13 @@ export class CreateSessionPage {
         console.log("trace "+color);
 
         console.log("Call http provider's createSession");
-        var session_vars;
-        new Promise(this.httpProvider.createSession(nickname, color)).then(s_vars => {
-          session_vars = s_vars;
+        this.httpProvider.createSession(nickname, color).subscribe(session_vars => {
 
           this.loading.dismiss();
 
-          console.log("createSession Response JSON: "+session_vars);
-          var session_id = session_vars.data.attributes.session_id;
-          var user_id = session_vars.data.attributes.user_id;
+          console.log("createSession Response JSON: "+session_vars.json());
+          var session_id = session_vars.json().data.attributes.session_id;
+          var user_id = session_vars.json().data.attributes.user_id;
           this.storage.set('session_id', session_id);
           this.storage.set('user_id', user_id);
         });

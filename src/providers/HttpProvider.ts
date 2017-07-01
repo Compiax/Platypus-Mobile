@@ -12,17 +12,17 @@ export class HttpProvider {
   }
 
   createSession(nickname, color) {
-    let responseJSON; // responseJSON.data.session_id
+    // let responseJSON; // responseJSON.data.session_id
 
     console.log('Calling '+URL+'/createSession from HttpProvider and sending '+nickname+' and '+color);
-    this.http.post(URL+'/createSession', {"nickname": nickname, "color": color})
-      .subscribe(res => {
-        console.log("Received "+res+" from API");
-        responseJSON = res.json();
-      }, (err) => {
-        console.log(err);
-        return false;
-      });
+    var responseJSON = this.http.post(URL+'/createSession', {"nickname": nickname, "color": color});
+      // .subscribe(res => {
+      //   console.log("Received "+res+" from API");
+      //   responseJSON = res.json();
+      // }, (err) => {
+      //   console.log(err);
+      //   return false;
+      // });
 
     console.log('Returning JSON response from HttpProvider');
     return responseJSON;
