@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
 
 const URL = 'http://localhost:3000/test';
@@ -12,17 +12,13 @@ export class HttpProvider {
   }
 
   createSession(nickname, color) {
-    // let responseJSON; // responseJSON.data.session_id
-
+    
     console.log('Calling '+URL+'/createSession from HttpProvider and sending '+nickname+' and '+color);
-    var responseJSON = this.http.post(URL+'/createSession', {"nickname": nickname, "color": color});
-      // .subscribe(res => {
-      //   console.log("Received "+res+" from API");
-      //   responseJSON = res.json();
-      // }, (err) => {
-      //   console.log(err);
-      //   return false;
-      // });
+
+    let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
+    let options = new RequestOptions({ headers: headers });
+
+    let responseJSON = this.http.post(URL+'/createSession', {"nickname": nickname, "color": color},  options);
 
     console.log('Returning JSON response from HttpProvider');
     return responseJSON;
