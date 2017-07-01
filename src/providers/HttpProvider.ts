@@ -12,13 +12,13 @@ export class HttpProvider {
   }
 
   createSession(nickname, color) {
-    
+
     console.log('Calling '+URL+'/createSession from HttpProvider and sending '+nickname+' and '+color);
 
     let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
     let options = new RequestOptions({ headers: headers });
-
-    let responseJSON = this.http.post(URL+'/createSession', {"nickname": nickname, "color": color},  options);
+    let data = "nickname="+nickname+"&color="+color;
+    let responseJSON = this.http.post(URL+'/createSession', {data},  options);
 
     console.log('Returning JSON response from HttpProvider');
     return responseJSON;
