@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 
-const URL = 'http://localhost:3000';
+const URL = 'http://localhost:3000/test';
 
 @Injectable()
 export class HttpProvider {
