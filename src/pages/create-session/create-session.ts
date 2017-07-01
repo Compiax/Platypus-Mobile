@@ -68,7 +68,7 @@ export class CreateSessionPage {
     this.loading.present();
     console.log("Call http provider's createSession");
     // var session_id = this.httpProvider.createSession(this.imageData).data.session_id;
-    var session_vars = this.httpProvider.createSession(this.storage.get("nickname"), this.storage.get("colour"));
+    var session_vars = this.httpProvider.createSession(this.storage.get('nickname').then((data) => {return data}), this.storage.get('colour').then((data) => {return data}));
     this.loading.dismiss();
 
     console.log("createSession Response JSON: "+session_vars);
