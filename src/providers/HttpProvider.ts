@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
 
-const URL = 'http://localhost:3000/test';
+const URL = 'http://localhost:3000/mobile';
 
 @Injectable()
 export class HttpProvider {
