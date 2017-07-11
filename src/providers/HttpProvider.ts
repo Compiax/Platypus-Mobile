@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 
 // API server URL
-const URL = 'http://localhost:3000/mobile';
+const URL = 'http://192.168.1.115:3000/mobile';
 
 @Injectable()
 export class HttpProvider {
@@ -50,11 +50,20 @@ export class HttpProvider {
 
   /**
    * Sends an image to the API for OCR processing
-   * @param  {String} imageData [description]
+   * @param  {String} imageData base64 image captured by user
    * @return {String}           JSON string containing the reciept items and their values
    */
-  sendSessionImage(imageData) {
-    // @todo Send image data to API
+  sendSessionImage(imageData, session_id) {
+
+    // Set HTTP request parameters
+    let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
+    let options = new RequestOptions({ headers: headers });
+    let data = "image="+imageData+"&session_id="+session_id;
+
+    // Send data to the API and store the response
+    let responseJSON = this.http.post(URL+'/sendImage', data,  options);
+
+    return responseJSON;
   }
 
 }

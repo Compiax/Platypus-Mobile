@@ -18,6 +18,7 @@ export class CreateSessionPage {
 
   loading: any; // Loading spinner
   imageData: any;
+  timeoutId: any;
 
   constructor(
     private navCtrl: NavController,
@@ -34,16 +35,30 @@ export class CreateSessionPage {
 
   }
 
+  startTimeout() {
+    this.loading.present();
+    this.timeoutId = setTimeout(() => {
+      this.loading.dismiss();
+      this.navCtrl.pop();
+    }, 30000);
+  };
+
+  endTimeout() {
+    clearTimeout(this.timeoutId);
+    this.loading.dismiss();
+    console.log("Ending timeout");
+  };
+
   captureImage() {
     console.log("Accessing device's camera and saving the captured data");
     const options: CameraOptions = {
       quality: 100,
       destinationType: this.camera.DestinationType.DATA_URL,
       sourceType: this.camera.PictureSourceType.CAMERA,
-      allowEdit: true,
+      allowEdit: false,
       encodingType: this.camera.EncodingType.JPEG,
       saveToPhotoAlbum: false,
-	    correctOrientation:true
+	    correctOrientation: true
     };
 
     this.camera.getPicture(options).then((imageData) => {
@@ -65,7 +80,7 @@ export class CreateSessionPage {
 
     console.log("CreateSessionPage View Did Enter");
 
-    this.loading.present();
+    this.startTimeout();
     console.log("Call http provider's createSession");
 
     this.storage.get('nickname').then(nickname => {
@@ -84,16 +99,14 @@ export class CreateSessionPage {
           this.storage.set('session_id', session_id);
           this.storage.set('user_id', user_id);
 
-          this.loading.dismiss();
+          this.endTimeout();
+
+          this.handleImage(session_id);
         });
       });
     });
 
-    // @todo If createSession was successful
-    if(this.captureImage()) {
-      // @todo Check if error occurs
-      this.httpProvider.sendSessionImage(this.imageData);
-    }
+
 
     // @todo Check if all of the above was successful
     // if(session_id){
@@ -102,6 +115,19 @@ export class CreateSessionPage {
     // } else {
     //   console.log("Invalid Session id. Http provider must've encountered a problem.");
     // }
+  }
+
+  handleImage(session_id) {
+    if(this.captureImage()) {
+      // @todo Check if error occurs
+
+      this.startTimeout();
+      this.httpProvider.sendSessionImage(this.imageData, session_id).subscribe(session_items => {
+
+
+        this.endTimeout();
+      });
+    }
   }
 
 }
