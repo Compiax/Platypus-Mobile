@@ -4,7 +4,7 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { File } from '@ionic-native/file';
 
 // API server URL
-const URL = 'http://192.168.1.115:3000/mobile';
+const URL = 'http://192.168.1.118:3000/mobile';
 const HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'};
 
 @Injectable()
@@ -69,7 +69,7 @@ export class HttpProvider {
       params: { "session_id":session_id }
     };
     let url = URL+"/sendImage";
-    console.log("Sending image data to server");
+    console.log("Sending image data to "+URL+" server");
     return this.fileTransfer.upload(imageData, url, options);
 
   }
