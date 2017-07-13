@@ -71,7 +71,7 @@ export class CreateSessionPage {
    * @param  {[type]} session_id [description]
    * @return {[type]}            [description]
    */
-  captureImage() {
+  captureImage(session_id) {
 
       console.log("Setting camera options");
       const options: CameraOptions = {
