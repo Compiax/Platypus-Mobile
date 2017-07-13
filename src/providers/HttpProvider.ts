@@ -1,14 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, RequestOptions } from '@angular/http';
+import { HTTP } from '@ionic-native/http';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { File } from '@ionic-native/file';
 
 // API server URL
 const URL = 'http://192.168.1.115:3000/mobile';
+const HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'};
 
 @Injectable()
 export class HttpProvider {
 
-  constructor(public http: Http) {
+  fileTransfer: FileTransferObject;
+
+  constructor(private http: HTTP, private transfer: FileTransfer, private file: File) {
     console.log("Http Provider Instantiated");
+    this.fileTransfer = this.transfer.create();
   }
 
   /**
@@ -19,14 +25,11 @@ export class HttpProvider {
   */
   createSession(nickname, color) {
 
-    // Set HTTP request parameters
-    let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
-    let options = new RequestOptions({ headers: headers });
-    let data = "nickname="+nickname+"&color="+color;
-
-    // Send data to the API and store the response
-    let responseJSON = this.http.post(URL+'/createSession', data,  options);
-
+    console.log("Sending Data...");
+    let data = {"nickname": nickname, "color": color};
+    let url = URL+"/createSession";
+    let responseJSON = this.http.post(url, data, HEADERS);
+    console.log("Returing response...");
     return responseJSON;
   }
 
@@ -38,12 +41,11 @@ export class HttpProvider {
   joinSession(session_id) {
 
     // Set HTTP request parameters
-    let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
-    let options = new RequestOptions({ headers: headers });
-	  let data = { id: session_id };
+    let data = {"session_id": session_id};
+    let url = URL+"/joinSession";
 
     // Send data to the API and store the response
-    let responseJSON = this.http.post(URL+'/joinSession', data,  options);
+    let responseJSON = this.http.post(url, data, HEADERS);
 
     return responseJSON;
   }
@@ -55,15 +57,21 @@ export class HttpProvider {
    */
   sendSessionImage(imageData, session_id) {
 
-    // Set HTTP request parameters
-    let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
-    let options = new RequestOptions({ headers: headers });
-    let data = "image="+imageData+"&session_id="+session_id;
+    console.log("SendSessionImage entered");
 
-    // Send data to the API and store the response
-    let responseJSON = this.http.post(URL+'/sendImage', data,  options);
+    let extension = ".jpg";
+    let filename = session_id+extension;
+    let options: FileUploadOptions = {
+      fileKey: 'file',
+      fileName: filename,
+      mimeType: 'image/jpg',
+      chunkedMode: false,
+      params: { "session_id":session_id }
+    };
+    let url = URL+"/sendImage";
+    console.log("Sending image data to server");
+    return this.fileTransfer.upload(imageData, url, options);
 
-    return responseJSON;
   }
 
 }
