@@ -4,7 +4,7 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { File } from '@ionic-native/file';
 
 // API server URL
-const URL = 'http://192.168.1.118:3000/mobile';
+const URL = 'http://192.168.43.144:3000/mobile';
 const HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'};
 
 @Injectable()
