@@ -24,8 +24,8 @@ export class JoinSessionPage {
   joinSession(session_id): void {
     var thisPage = this;
 
-    console.log("Call http provider's createSession");
-    thisPage.timeout.startTimeout("requesting create session from httpProvider");
+    console.log("Call http provider's joinSession");
+    thisPage.timeout.startTimeout("requesting join session from httpProvider");
     thisPage.httpProvider.joinSession(session_id).then( (json) => {
 
       thisPage.timeout.endTimeout();
@@ -33,14 +33,15 @@ export class JoinSessionPage {
       var session_vars = JSON.parse(json.data);
 
       console.log("joinSession Response JSON: "+session_vars);
-      var session_id = session_vars.data.attributes.session_id;
-      console.log("joinSession Response JSON session_id: "+session_id);
-      var user_id = session_vars.data.attributes.user_id;
+      var user_id = session_vars.user_id;
       console.log("joinSession Response JSON user_id: "+user_id);
-      
+      // console.log("joinSession Response JSON: "+session_vars);
+      // var user_id = session_vars.data.attributes.user_id;
+      // console.log("joinSession Response JSON user_id: "+user_id);
+
       thisPage.storeJoinSessionResponse(session_id, user_id);
 
-    });
+    }, (err) => { console.log("Join Session Error: "+err) });
   }
 
   storeJoinSessionResponse(session_id, user_id) {

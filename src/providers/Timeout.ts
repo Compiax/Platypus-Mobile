@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController } from 'ionic-angular';
 
 const TIMEOUT_LIMIT: any = 10000;
 
