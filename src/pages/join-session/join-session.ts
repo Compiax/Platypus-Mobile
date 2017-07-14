@@ -21,6 +21,10 @@ export class JoinSessionPage {
     private httpProvider: HttpProvider,
     private timeout: Timeout) { }
 
+  /**
+   * Attempts to join an session and saves the response locally
+   * @param {String} session_id The id of the session to join
+   */
   joinSession(session_id): void {
     var thisPage = this;
 
@@ -44,6 +48,11 @@ export class JoinSessionPage {
     }, (err) => { console.log("Join Session Error: "+err) });
   }
 
+  /**
+   * Stores the parameters in local storage from the response of joining a session
+   * @param  {String} session_id The ID of the session the client joined
+   * @param  {String} user_id    The user ID of the client
+   */
   storeJoinSessionResponse(session_id, user_id) {
 
     var thisPage = this;
