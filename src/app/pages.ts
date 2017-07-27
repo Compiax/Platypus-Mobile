@@ -6,5 +6,4 @@ export class Pages {
 export const PAGES = [
   { title: 'Profile', component: "ProfilePage" },
   { title: 'About', component: "AboutPage" },
-  { title: 'Exit', component: "ExitPage" },
 ];

@@ -30,21 +30,22 @@ export class HomePage {
 
   }
 
-  /**
-   * Opens a page with the specified name
-   * @param {String} page The name of the page to open
-   */
+
   openModal(page): void {
     // this.modal = this.modalCtrl.create(Profile);
     this.modal.present();
   }
 
+  /**
+   * Opens a page with the specified name
+   * @param {String} page The name of the page to open
+   */
   openPage(page): void { this.navCtrl.push(page); }
 
 }
 
 @Component({
-  selector: 'page-home',
+  selector: 'ProfilePage',
   template: '<ion-header><ion-navbar><ion-title>Profile</ion-title></ion-navbar></ion-header><ion-content padding text-center><h1>Profile</h1></ion-content>',
 })
 class Profile {
