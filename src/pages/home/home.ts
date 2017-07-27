@@ -29,6 +29,10 @@ export class HomePage {
 
   }
 
+  /**
+   * Opens a page with the specified name
+   * @param {String} page The name of the page to open
+   */
   openPage(page): void { this.navCtrl.push(page); }
 
 }
