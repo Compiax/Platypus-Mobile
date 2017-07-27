@@ -13,8 +13,13 @@ import { PAGES } from '../../app/pages';
 export class HomePage {
 
   nickname: string;
-  colour: string;
+
+  nicknameFirstLetter: string;
+  nicknameOtherLetters: string;
+  color: string;
+  activeColor: Object;
   modal: any;
+
   pages = PAGES;
 
   constructor(private modalCtrl: ModalController, private navCtrl: NavController, private navParams: NavParams, private storage: Storage) { }
@@ -25,8 +30,16 @@ export class HomePage {
 
   ionViewWillEnter() {
 
-    this.storage.get('nickname').then((data) => {this.nickname = data;});
-    this.storage.get('colour').then((data) => {this.colour = data;});
+    this.storage.get('nickname').then((data) => {
+      this.nickname = data;
+      this.nicknameFirstLetter = this.nickname.charAt(0);
+      this.nicknameOtherLetters = this.nickname.substr(1, this.nickname.length-1);
+    });
+    this.storage.get('colour').then((data) => {
+      this.color = data;
+      this.activeColor = { 'background-color': this.color };
+    });
+
 
   }
 
