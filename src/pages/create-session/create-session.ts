@@ -6,8 +6,6 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 
 import { Storage } from '@ionic/storage';
 
-const TIMEOUT_LIMIT: any = 10000;
-
 @IonicPage()
 @Component({
   selector: 'page-create-session',
@@ -15,16 +13,6 @@ const TIMEOUT_LIMIT: any = 10000;
   providers:[HttpProvider]
 })
 
-/**
- * [constructor description]
- * @param  {NavController}     privatenavCtrl      [description]
- * @param  {NavParams}         privatenavParams    [description]
- * @param  {LoadingController} privateloadingCtrl  [description]
- * @param  {Storage}           privatestorage      [description]
- * @param  {Camera}            privatecamera       [description]
- * @param  {HttpProvider}      privatehttpProvider [description]
- * @return {[type]}                                [description]
- */
 export class CreateSessionPage {
 
   loading: any; // Loading spinner
@@ -37,13 +25,12 @@ export class CreateSessionPage {
     private loadingCtrl: LoadingController,
     private storage: Storage,
     private camera: Camera,
-    private httpProvider: HttpProvider) { }
+    private httpProvider: HttpProvider) {}
 
   /**
-   * [startTimeout description]
-   * @return {[type]} [description]
+   * Starts a timeout
    */
-  startTimeout(err) {
+  startTimeout() {
     console.log("Initialize loading spinner");
     this.loading = this.loadingCtrl.create({
       content: "<ion-spinner></ion-spinner>"
@@ -51,14 +38,12 @@ export class CreateSessionPage {
     this.loading.present();
     this.timeoutId = setTimeout(() => {
       this.loading.dismiss();
-      console.log("TIMEOUT: "+err+" took too long");
       this.navCtrl.pop();
-    }, TIMEOUT_LIMIT);
+    }, 90000);
   };
 
   /**
-   * [endTimeout description]
-   * @return {[type]} [description]
+   * Ends the currently running timeout
    */
   endTimeout() {
     clearTimeout(this.timeoutId);
@@ -67,30 +52,33 @@ export class CreateSessionPage {
   };
 
   /**
-   * [captureImage description]
-   * @param  {[type]} session_id [description]
-   * @return {[type]}            [description]
+   * Accesses cordova's camera  to take an image
+   * @param  {String} session_id The currently created session id
    */
   captureImage(session_id) {
 
-      console.log("Setting camera options");
-      const options: CameraOptions = {
-        quality: 100,
-        destinationType: this.camera.DestinationType.FILE_URI,
-        sourceType: this.camera.PictureSourceType.CAMERA,
-        allowEdit: false,
-        encodingType: this.camera.EncodingType.JPEG,
-        saveToPhotoAlbum: false,
-  	    correctOrientation: true
+    console.log("Setting camera options");
+    const options: CameraOptions = {
+      quality: 100,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      sourceType: this.camera.PictureSourceType.CAMERA,
+      allowEdit: false,
+      encodingType: this.camera.EncodingType.JPEG,
+      saveToPhotoAlbum: false,
+	    correctOrientation: true
+
     };
 
     console.log("Accessing device's camera");
     var thisPage = this;
     this.camera.getPicture(options).then(function(imageData) {
 
+      console.log("Start timeout");
+      thisPage.startTimeout();
+
       console.log("Sending data to HTTP");
-      thisPage.startTimeout("sending image to httpProvider");
-      thisPage.httpProvider.sendSessionImage(imageData, session_id).then((data) => {
+      thisPage.httpProvider.sendSessionImage(imageData, session_id)
+        .then((data) => {
           console.log("Success: "+data);
           thisPage.endTimeout();
 
@@ -112,29 +100,23 @@ export class CreateSessionPage {
 
   }
 
-  createSession() {
+  /**
+   * Calls the HttpProviders create session functions
+   */
+  initializeSession() {
     var thisPage = this;
 
+    thisPage.startTimeout();
     console.log("Call http provider's createSession");
-    thisPage.startTimeout("getting nickname from local storage");
+
     thisPage.storage.get('nickname').then(nickname => {
-
-      thisPage.endTimeout();
-
       console.log("Sending nickname: "+nickname);
-      thisPage.startTimeout("getting color from local storage");
       thisPage.storage.get('colour').then(color => {
-
-        thisPage.endTimeout();
-
         console.log("Sending color: "+color);
 
         console.log("Call http provider's createSession");
-        thisPage.startTimeout("requesting create session from httpProvider");
-        thisPage.httpProvider.createSession(nickname, color).then(json => {
-
-          thisPage.endTimeout();
-
+        thisPage.httpProvider.createSession(nickname, color)
+        .then(json => {
           var session_vars = JSON.parse(json.data);
 
           console.log("createSession Response JSON: "+session_vars);
@@ -145,6 +127,8 @@ export class CreateSessionPage {
 
           thisPage.storeCreateSessionResponse(session_id, user_id);
 
+          thisPage.endTimeout();
+
           thisPage.captureImage(session_id);
         });
       });
@@ -152,22 +136,20 @@ export class CreateSessionPage {
 
   }
 
+  /**
+   * Stores session data locally
+   * @param  {String} session_id The newly created session's id
+   * @param  {String} user_id    The current user creating the session
+   */
   storeCreateSessionResponse(session_id, user_id) {
 
     var thisPage = this;
-
-    thisPage.startTimeout("saving session_id to local storage");
     thisPage.storage.set('session_id', session_id).then( (data) => {
 
-      thisPage.endTimeout();
-
-      thisPage.startTimeout("saving user_id to local storage");
       thisPage.storage.set('user_id', user_id).then( (data) => {
 
-        thisPage.endTimeout();
-
-        // console.log("Redirecting to JoinSessionPage");
-        // thisPage.navCtrl.push('SessionPage', {session_id: session_id});
+        console.log("Redirecting to JoinSessionPage");
+        thisPage.navCtrl.push('SessionPage', {session_id: session_id});
 
       }, (err) => {
         console.log("Storing user_id "+user_id+" in local storage failed...");
@@ -185,7 +167,7 @@ export class CreateSessionPage {
   ionViewDidEnter() {
 
     console.log("CreateSessionPage View Did Enter");
-    this.createSession();
+    this.initializeSession();
 
   }
 
