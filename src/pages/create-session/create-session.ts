@@ -66,6 +66,7 @@ export class CreateSessionPage {
       encodingType: this.camera.EncodingType.JPEG,
       saveToPhotoAlbum: false,
 	    correctOrientation: true
+
     };
 
     console.log("Accessing device's camera");
