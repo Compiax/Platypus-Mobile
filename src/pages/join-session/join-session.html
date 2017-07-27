@@ -8,15 +8,15 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding text-center>
 
   <ion-list>
     <ion-item class="input-box" color="primary">
       <ion-label class="grey-text" floating>Session Code</ion-label>
-      <ion-input type="text" color="accents02"></ion-input>
+      <ion-input type="text" color="accents02" [value]="session_id" [(ngModel)]="session_id"></ion-input>
     </ion-item>
   </ion-list>
 
-  <button ion-button >Join</button>
+  <button ion-button (click)='joinSession()' >Join</button>
 
 </ion-content>
