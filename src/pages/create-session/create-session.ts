@@ -111,7 +111,7 @@ export class CreateSessionPage {
 
     thisPage.storage.get('nickname').then(nickname => {
       console.log("Sending nickname: "+nickname);
-      thisPage.storage.get('colour').then(color => {
+      thisPage.storage.get('color').then(color => {
         console.log("Sending color: "+color);
 
         console.log("Call http provider's createSession");

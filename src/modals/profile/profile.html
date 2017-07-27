@@ -1,7 +1,6 @@
-
 <ion-header>
-
   <ion-navbar color="primary" class="split-bill-nav">
+    <ion-title>Profile</ion-title>
     <img src="assets/logos/nav-logo.png"/>
   </ion-navbar>
 
@@ -9,8 +8,6 @@
 
 
 <ion-content padding text-center>
-
-  <h1 class="begin-title">Get Started</h1>
 
   <ion-list class="ion-list">
     <ion-item class="input-box" color="primary">
@@ -52,6 +49,8 @@
 
   </div>
 
-  <button ion-button (click)='navigateToHomePage()' [ngStyle]="activeColor">Let's Go</button>
+  <div offset-8 col-4>
+    <button ion-button (click)="dismiss()" [ngStyle]="activeColor">Done</button>
+  </div>
 
 </ion-content>
