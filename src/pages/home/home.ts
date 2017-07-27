@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController, NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 
 // Used for storing user data locally
 import { Storage } from '@ionic/storage';
@@ -13,7 +13,6 @@ import { PAGES } from '../../app/pages';
 export class HomePage {
 
   nickname: string;
-
   nicknameFirstLetter: string;
   nicknameOtherLetters: string;
   color: string;
@@ -22,30 +21,46 @@ export class HomePage {
 
   pages = PAGES;
 
-  constructor(private modalCtrl: ModalController, private navCtrl: NavController, private navParams: NavParams, private storage: Storage) { }
+  constructor(
+    private modalCtrl: ModalController,
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private storage: Storage) { }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad HomePage');
   }
 
   ionViewWillEnter() {
+    this.loadResources();
+  }
+
+  /**
+   * Sets local variables to saved values in SQLite
+   */
+  loadResources() {
 
     this.storage.get('nickname').then((data) => {
       this.nickname = data;
       this.nicknameFirstLetter = this.nickname.charAt(0);
       this.nicknameOtherLetters = this.nickname.substr(1, this.nickname.length-1);
     });
-    this.storage.get('colour').then((data) => {
+    this.storage.get('color').then((data) => {
       this.color = data;
       this.activeColor = { 'background-color': this.color };
     });
 
-
   }
 
-
-  openModal(page): void {
-    // this.modal = this.modalCtrl.create(Profile);
+  /**
+   * Opens a modal with the specified name
+   * @param {String} modal The name of the modal to open
+   */
+  openModal(modal): void {
+    this.modal = this.modalCtrl.create(modal);
+    this.modal.onDidDismiss((data) => {
+      this.loadResources();
+    });
     this.modal.present();
   }
 
@@ -55,19 +70,4 @@ export class HomePage {
    */
   openPage(page): void { this.navCtrl.push(page); }
 
-}
-
-@Component({
-  selector: 'ProfilePage',
-  template: '<ion-header><ion-navbar><ion-title>Profile</ion-title></ion-navbar></ion-header><ion-content padding text-center><h1>Profile</h1></ion-content>',
-})
-class Profile {
-
-   constructor(public navParams: NavParams, private viewCtrl: ViewController) {
-
-   }
-
-   dismiss() {
-     this.viewCtrl.dismiss();
-   }
 }

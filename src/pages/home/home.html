@@ -9,7 +9,7 @@
 <ion-menu [content]="content" class="menu">
   <ion-content>
     <ion-list>
-      <button menuClose ion-item color="accents01" *ngFor="let p of pages" (click)="openPage(p.component)">
+      <button menuClose ion-item color="accents01" *ngFor="let p of pages" (click)="openModal(p.component)">
         {{p.title}}
       </button>
     </ion-list>
