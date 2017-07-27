@@ -1,9 +1,11 @@
+import { ProfileModal } from '../modals/profile/profile';
+import { AboutModal } from '../modals/about/about';
 export class Pages {
   title: string;
-  component: string;
+  component: Object;
 }
 
 export const PAGES = [
-  { title: 'Profile', component: "ProfilePage" },
-  { title: 'About', component: "AboutPage" },
+  { title: 'Profile', component: ProfileModal },
+  { title: 'About', component: AboutModal },
 ];

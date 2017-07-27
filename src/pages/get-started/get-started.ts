@@ -13,25 +13,25 @@ import { Storage } from '@ionic/storage';
 export class GetStartedPage {
 
   nickname: string;
-  colour: string;
-  activeColour: Object;
+  color: string;
+  activeColor: Object;
 
   constructor(private navCtrl: NavController, private navParams: NavParams, private storage: Storage) {
-    this.colour =  "rgb(242, 111, 129)";
-    this.activeColour = { 'background-color': this.colour };
+    this.color =  "rgb(242, 111, 129)";
+    this.activeColor = { 'background-color': this.color };
   }
 
-  // Set the user's prefered colour to the selected colour
+  // Set the user's prefered color to the selected color
   selectedColor($event):void {
 
     // Clicked div
     var element = $event.currentTarget;
 
-    // Set 'colour' to the background colour of the label of the div which was clicked on
-    this.colour = window.getComputedStyle(element.querySelector("label")).backgroundColor;
-    this.activeColour = { 'background-color': this.colour };
+    // Set 'color' to the background color of the label of the div which was clicked on
+    this.color = window.getComputedStyle(element.querySelector("label")).backgroundColor;
+    this.activeColor = { 'background-color': this.color };
 
-    // Update selected colour radio buttons
+    // Update selected color radio buttons
     document.getElementsByClassName("active")[0].classList.remove("active");
     element.className += " active";
   }
@@ -39,10 +39,10 @@ export class GetStartedPage {
   navigateToHomePage(): void {
 
     if(this.nickname != "" && this.nickname != null) { this.storage.set('nickname', this.nickname); }
-    this.storage.set('colour', this.colour);
+    this.storage.set('color', this.color);
 
     // How to navigate and send information to next page
-    // this.navCtrl.push('HomePage', {nickname: this.nickname, colour: "#AAA"});
+    // this.navCtrl.push('HomePage', {nickname: this.nickname, color: "#AAA"});
 
     this.navCtrl.setRoot("HomePage");
   }
