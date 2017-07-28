@@ -2,15 +2,16 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 
 import { HttpProvider } from '../../providers/HttpProvider';
-import { Camera, CameraOptions } from '@ionic-native/camera';
+import { Timeout } from '../../providers/Timeout';
 
+import { Camera, CameraOptions } from '@ionic-native/camera';
 import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
   selector: 'page-create-session',
   templateUrl: 'create-session.html',
-  providers:[HttpProvider]
+  providers:[HttpProvider, Timeout]
 })
 
 export class CreateSessionPage {
@@ -25,31 +26,8 @@ export class CreateSessionPage {
     private loadingCtrl: LoadingController,
     private storage: Storage,
     private camera: Camera,
-    private httpProvider: HttpProvider) {}
-
-  /**
-   * Starts a timeout
-   */
-  startTimeout() {
-    console.log("Initialize loading spinner");
-    this.loading = this.loadingCtrl.create({
-      content: "<ion-spinner></ion-spinner>"
-    });
-    this.loading.present();
-    this.timeoutId = setTimeout(() => {
-      this.loading.dismiss();
-      this.navCtrl.pop();
-    }, 90000);
-  };
-
-  /**
-   * Ends the currently running timeout
-   */
-  endTimeout() {
-    clearTimeout(this.timeoutId);
-    this.loading.dismiss();
-    console.log("Ending timeout");
-  };
+    private httpProvider: HttpProvider,
+    private timeout: Timeout) {}
 
   /**
    * Accesses cordova's camera  to take an image
@@ -73,14 +51,13 @@ export class CreateSessionPage {
     var thisPage = this;
     this.camera.getPicture(options).then(function(imageData) {
 
-      console.log("Start timeout");
-      thisPage.startTimeout();
-
       console.log("Sending data to HTTP");
+      thisPage.timeout.startTimeout("Launch device camera");
       thisPage.httpProvider.sendSessionImage(imageData, session_id)
         .then((data) => {
+
+          thisPage.timeout.endTimeout();
           console.log("Success: "+data);
-          thisPage.endTimeout();
 
           // console.log("Cleaning up");
           // thisPage.camera.cleanup().then((data) => {
@@ -106,17 +83,26 @@ export class CreateSessionPage {
   initializeSession() {
     var thisPage = this;
 
-    thisPage.startTimeout();
-    console.log("Call http provider's createSession");
-
+    thisPage.timeout.startTimeout("get stored nickname");
     thisPage.storage.get('nickname').then(nickname => {
+
+      thisPage.timeout.endTimeout();
+
       console.log("Sending nickname: "+nickname);
+
+      thisPage.timeout.startTimeout("get stored color");
       thisPage.storage.get('color').then(color => {
+
+        thisPage.timeout.endTimeout();
+
         console.log("Sending color: "+color);
 
         console.log("Call http provider's createSession");
-        thisPage.httpProvider.createSession(nickname, color)
-        .then(json => {
+        thisPage.timeout.startTimeout("call http provider's createSession");
+        thisPage.httpProvider.createSession(nickname, color).then(json => {
+
+          thisPage.timeout.endTimeout();
+
           var session_vars = JSON.parse(json.data);
 
           console.log("createSession Response JSON: "+session_vars);
@@ -126,8 +112,6 @@ export class CreateSessionPage {
           console.log("createSession Response JSON user_id: "+user_id);
 
           thisPage.storeCreateSessionResponse(session_id, user_id);
-
-          thisPage.endTimeout();
 
           thisPage.captureImage(session_id);
         });
@@ -144,12 +128,18 @@ export class CreateSessionPage {
   storeCreateSessionResponse(session_id, user_id) {
 
     var thisPage = this;
+    thisPage.timeout.startTimeout("store session ID locally");
     thisPage.storage.set('session_id', session_id).then( (data) => {
 
+      thisPage.timeout.endTimeout();
+
+      thisPage.timeout.startTimeout("store user ID locally");
       thisPage.storage.set('user_id', user_id).then( (data) => {
 
-        console.log("Redirecting to JoinSessionPage");
-        thisPage.navCtrl.push('SessionPage', {session_id: session_id});
+        thisPage.timeout.endTimeout();
+
+        //console.log("Redirecting to JoinSessionPage");
+        //thisPage.navCtrl.push('SessionPage', {session_id: session_id});
 
       }, (err) => {
         console.log("Storing user_id "+user_id+" in local storage failed...");
