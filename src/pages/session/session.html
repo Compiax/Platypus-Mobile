@@ -1,16 +1,19 @@
-<!--
-  Generated template for the SessionPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
-  <ion-navbar>
-    <ion-title>session</ion-title>
+  <ion-navbar #content color="primary" class="split-bill-nav">
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <img src="assets/logos/nav-logo.png"/>
   </ion-navbar>
-
 </ion-header>
+
+<ion-menu [content]="content" class="menu">
+  <ion-content>
+    <ion-list>
+      <button menuClose ion-item color="accents01" *ngFor="let p of pages" (click)="openModal(p.component)">
+        {{p.title}}
+      </button>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
 
 <ion-content padding>

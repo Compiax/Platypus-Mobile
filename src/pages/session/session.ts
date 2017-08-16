@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 
-/**
- * Generated class for the SessionPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+// Used for storing user data locally
+import { Storage } from '@ionic/storage';
+import { SESSION_PAGES } from '../../app/pages';
+
 @IonicPage()
 @Component({
   selector: 'page-session',
@@ -14,11 +12,26 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class SessionPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+  pages = SESSION_PAGES;
+
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams) { }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SessionPage');
+  }
+
+  ionViewWillEnter() {
+    // @todo Check session_id is stored and correct
+    // @todo Check user_id is stored and correct
+    // @todo If valid client, start socketIO
+
+    // @todo Get JSON (Store it locally as array of JSON items)
+    // @todo Receive updates from socketIO and update JSON array items
+    // OR
+    // @todo Get JSON and parse it straight into ionic panels
+    // @todo Receive updates from scoketIO, parse it as ionic panels and update them
   }
 
 }
