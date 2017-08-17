@@ -49,6 +49,8 @@ export class GetStartedPage {
 
   // If the user has used the app before, skip to the home page
   ionViewWillEnter() {
+    // DELETE IN DEVELOPEMENT
+    this.navCtrl.setRoot("SessionPage");
 
     // Delete for production
     this.storage.clear();

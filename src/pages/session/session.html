@@ -8,14 +8,67 @@
 <ion-menu [content]="content" class="menu">
   <ion-content>
     <ion-list>
-      <button menuClose ion-item color="accents01" *ngFor="let p of pages" (click)="openModal(p.component)">
-        {{p.title}}
+      <button menuClose ion-item icon-start
+        color="accents01"
+        *ngFor="let p of pages"
+        (click)="openModal(p.component)"
+        [innerHtml] = p.title>
       </button>
     </ion-list>
   </ion-content>
 </ion-menu>
 
+<ion-content ion-row padding text-center>
 
-<ion-content padding>
+  <ion-list>
+    <ion-item-sliding class="card-container" *ngFor="let it of items" #item>
+      <ion-item class=card-top>
+          <span class="card-info card-price">R<span>{{it.getPrice()}}</span></span>
+          <span class="card-info card-name">{{it.getName()}}</span>
+          <span class="card-info card-quantity">{{it.getQuantity()}}</span>
+      </ion-item>
+      <ion-item-options class="card-bottom" side="right">
+        <button ion-button icon-only round clear small (click)="addItem(it)" class="card-modify card-claim">
+          <ion-icon name="add-circle"></ion-icon>
+        </button>
+        <!-- ONLY SHOW IF CLIENT HAS ITEMS AVAILABLE TO REMOVE -->
+        <button ion-button icon-only round clear small (click)="removeItem(it)" class="card-modify card-remove">
+          <ion-icon name="remove-circle"></ion-icon>
+        </button>
+      </ion-item-options>
+
+      <ion-item-options class="card-bottom" side="left">
+        <button ion-button icon-only round clear small (click)="editItem(it)" class="card-modify card-edit">
+          <ion-icon name="hammer"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- <ion-card class="card-container" *ngFor="let item of items">
+    <div class=card-bottom>
+      <button ion-button icon-only round clear small (click)="item.decrementQuantity()" class="card-modify card-claim">
+        <ion-icon name="add-circle"></ion-icon>
+      </button>
+      <button ion-button icon-only round clear small (click)="editItem(item)" class="card-modify card-edit">
+        <ion-icon name="hammer"></ion-icon>
+      </button>
+      <button ion-button icon-only round clear small (click)="removeItem(item)" class="card-modify card-remove">
+        <ion-icon name="remove-circle"></ion-icon>
+      </button>
+    </div>
+    <div class=card-top>
+      <span class="card-info card-price">R<span>{{item.getPrice()}}</span></span>
+      <span class="card-info card-name">{{item.getName()}}</span>
+      <span class="card-info card-quantity">{{item.getQuantity()}}</span>
+    </div>
+  </ion-card> -->
+
 
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar color="primary">
+    <ion-title>Total: <span class="bill-total">R{{ total }}</span></ion-title>
+  </ion-toolbar>
+</ion-footer>

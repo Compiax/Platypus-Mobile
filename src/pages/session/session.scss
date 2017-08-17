@@ -1,3 +1,41 @@
 page-session {
 
 }
+
+.card-container {
+  position: relative;
+}
+
+.card-top {
+  color: map-get($colors, light);
+  position: relative;
+  background-color: map-get($colors, primary);
+  text-align: center;
+}
+
+.list .card-container .item .item-inner, .list .card-container ion-item-options {
+  border-top: 1px;
+  border-left: 1px;
+  border-right: 1px;
+  border-bottom: 1px;
+}
+
+.card-price {
+  left: 0;
+  margin-left: 10%;
+  position: absolute;
+}
+
+.card-quantity {
+  right: 0;
+  margin-right: 10%;
+  position: absolute;
+}
+
+.card-bottom {
+  background-color: map-get($colors, accents01);
+}
+
+.card-modify {
+  font-size: 1.2em;
+}

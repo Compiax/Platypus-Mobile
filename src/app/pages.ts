@@ -11,7 +11,7 @@ export const PAGES = [
 ];
 
 export const SESSION_PAGES = [
-  { title: 'All Items', component: null },
+  { title: "All Items", component: null },
   { title: 'My Items', component: null },
   { title: 'List Users', component: null },
   { title: 'Session ID', component: null },
