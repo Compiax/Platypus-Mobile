@@ -97,7 +97,12 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar color="primary">
-    <ion-title>Total: <span class="bill-total">R{{ getTotal() }}</span></ion-title>
-    <ion-title>Due: <span class="bill-total">R{{ getDue() }}</span></ion-title>
+    <ion-title class="bill-total">Bill Total: <span class="bill-total-amount">R{{ getTotal().toFixed(2) }}</span></ion-title>
+    <ion-title [ngStyle]="{ backgroundColor: color }" class="bill-nickname">{{nickname}}:</ion-title>
+    <ion-title offset-1>Due: <span class="bill-due">R{{ getDue().toFixed(2) }}</span></ion-title>
+    <ion-title offset-1>Gratuity: <span class="bill-gratuity">R{{ getGratuity().toFixed(2) }}</span> at
+      <input [(ngModel)]="gratuityPercent" col-2 type="number" value="{{ gratuityPercent }}"/> %
+    </ion-title>
+    <ion-title offset-1>Total Due: <span class="bill-total-due">R{{ getTotalDue().toFixed(2) }}</span></ion-title>
   </ion-toolbar>
 </ion-footer>

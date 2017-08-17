@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-an
 
 import { HttpProvider } from '../../providers/HttpProvider';
 import { Timeout } from '../../providers/Timeout';
+import { Alert } from '../../providers/Alert';
 
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { Storage } from '@ionic/storage';
@@ -11,7 +12,7 @@ import { Storage } from '@ionic/storage';
 @Component({
   selector: 'page-create-session',
   templateUrl: 'create-session.html',
-  providers:[HttpProvider, Timeout]
+  providers:[HttpProvider, Timeout, Alert]
 })
 
 export class CreateSessionPage {

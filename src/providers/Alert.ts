@@ -18,6 +18,7 @@ export class Alert {
         closeButtonText: "Ok",
         position: 'top'
       });
+      toast.present();
     }
 
 }

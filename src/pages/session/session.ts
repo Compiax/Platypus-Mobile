@@ -17,6 +17,7 @@ export class SessionPage {
 
   pages = SESSION_PAGES;
   total: number;
+  gratuityPercent: number;
   items: Array<Item>;
   nickname: string;
   color: string;
@@ -30,13 +31,14 @@ export class SessionPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     private storage: Storage,
-    private alert: Alert) {
+    private alertService: Alert) {
       this.items = new Array<Item>();
 
       this.createNewItem(0, 11.24, 5, "Cheese Burger"); // @todo Get this info from the server upon establishing a connection
       this.createNewItem(1, 24.90, 2, "Milkshake");     // @todo Get this info from the server upon establishing a connection
 
       this.total = this.getTotal();
+      this.gratuityPercent = 10;
 
       this.sessionOwner = "Duart";  // @todo Get this info from the server upon establishing a connection
       this.selectedItems = "all-items";
@@ -65,16 +67,67 @@ export class SessionPage {
   }
 
   ionViewWillEnter() {
+
+    this.validateSession()
+    .then(this.validateUser)
+    .then(this.getAllSessionData)
+    .then(this.startSocketIO);
+
     // @todo Check session_id is stored and correct
     // @todo Check user_id is stored and correct
     // @todo If valid client, start socketIO
 
-    // @todo Get JSON (Store it locally as array of JSON items)
-    // @todo Receive updates from socketIO and update JSON array items
-    // OR
     // @todo Get JSON and parse it straight into ionic panels
     // @todo Receive updates from scoketIO, parse it as ionic panels and update them
     this.loadResources();
+  }
+
+  validateSession() {
+    return new Promise(function (resolve, reject) {
+      if(1 == 1) {
+        console.log("Session validated");
+        resolve("Session validated");
+      } else {
+        console.log("Session validation broke");
+        reject(Error("Session validation broke"));
+      }
+    });
+  }
+
+  getAllSessionData(){
+    return new Promise(function (resolve, reject) {
+      if(1 == 1) {
+        console.log("Session data received");
+        resolve("Session data received");
+      } else {
+        console.log("Session data retrievel broke");
+        reject(Error("Session data retrievel broke"));
+      }
+    });
+  }
+
+  validateUser(){
+    return new Promise(function (resolve, reject) {
+      if(1 == 1) {
+        console.log("User validated");
+        resolve("User validated");
+      } else {
+        console.log("User validation broke");
+        reject(Error("User validation broke"));
+      }
+    });
+  }
+
+  startSocketIO(){
+    return new Promise(function (resolve, reject) {
+      if(1 == 1) {
+        console.log("Started SocketIO communicated successfully");
+        resolve("Started SocketIO communicated successfully");
+      } else {
+        console.log("SocketIO communication broke");
+        reject(Error("SocketIO communication broke"));
+      }
+    });
   }
 
   loadResources() {
@@ -82,6 +135,7 @@ export class SessionPage {
     this.storage.get('nickname').then((data) => {
       this.nickname = data;
     });
+
     this.storage.get('color').then((data) => {
       this.color = data;
       this.activeBackgroundColor = { 'background-color': this.color };
@@ -102,8 +156,8 @@ export class SessionPage {
     console.log("Editing: "+item.getName());
     // Dismiss the slide/swipe
     // Replace spans with inputs, add a tick button at the end
-    // If tick button is pressed save all changes to local data
-    // Send changes to server
+    // If tick button is pressed save all changes locally
+    // Send changes to API
   }
 
   removeItem(item) {
@@ -127,11 +181,19 @@ export class SessionPage {
   }
 
   getDue() {
-    var total = 0.0;
+    var due = 0.0;
     for(let item of this.items) {
-      total += item.getPrice()*item.getMyQuantity();
+      due += item.getPrice()*item.getMyQuantity();
     }
-    return total;
+    return due;
+  }
+
+  getGratuity() {
+    return this.getDue()*(this.gratuityPercent/100);
+  }
+
+  getTotalDue() {
+    return this.getGratuity()+this.getDue();
   }
 
   leaveSession() {

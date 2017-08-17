@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
+import { Alert } from '../../providers/Alert';
 
 // Used for storing user data locally
 import { Storage } from '@ionic/storage';
@@ -9,6 +10,7 @@ import { PAGES } from '../../app/pages';
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
+  providers:[Alert]
 })
 export class HomePage {
 

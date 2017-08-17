@@ -3,12 +3,13 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { HttpProvider } from '../../providers/HttpProvider';
 import { Timeout } from '../../providers/Timeout';
+import { Alert } from '../../providers/Alert';
 
 @IonicPage()
 @Component({
   selector: 'page-join-session',
   templateUrl: 'join-session.html',
-  providers:[HttpProvider, Timeout]
+  providers:[HttpProvider, Timeout, Alert]
 })
 export class JoinSessionPage {
 
@@ -67,7 +68,7 @@ export class JoinSessionPage {
 
         thisPage.timeout.endTimeout();
 
-        // console.log("Redirecting to JoinSessionPage");
+        // console.log("Redirecting to SessionPage");
         // thisPage.navCtrl.push('SessionPage', {session_id: session_id});
 
       }, (err) => {
