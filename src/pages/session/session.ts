@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
+import { Alert } from '../../providers/Alert';
 
 // Used for storing user data locally
 import { Storage } from '@ionic/storage';
@@ -10,6 +11,7 @@ import { Item } from '../../providers/Item';
 @Component({
   selector: 'page-session',
   templateUrl: 'session.html',
+  providers:[Alert]
 })
 export class SessionPage {
 
@@ -27,7 +29,8 @@ export class SessionPage {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private storage: Storage) {
+    private storage: Storage,
+    private alert: Alert) {
       this.items = new Array<Item>();
 
       this.createNewItem(0, 11.24, 5, "Cheese Burger"); // @todo Get this info from the server upon establishing a connection
@@ -132,6 +135,7 @@ export class SessionPage {
   }
 
   leaveSession() {
+    // @todo Ask the user if they're sure
     // @todo Inform the API this user is disconnecting
     this.navCtrl.setRoot("HomePage");
   }

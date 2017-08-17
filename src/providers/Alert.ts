@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NavController, NavParams, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
 
 @Injectable()
 export class Alert {
@@ -7,10 +7,10 @@ export class Alert {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private loadingCtrl: LoadingController) {}
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController) {}
 
     public sendAlert(alertMessage) {
-      this.navCtrl.setRoot("SessionPage").then( function (){
       let toast = this.toastCtrl.create({
         message: alertMessage,
         duration: 5000,
@@ -18,7 +18,6 @@ export class Alert {
         closeButtonText: "Ok",
         position: 'top'
       });
-    });
     }
 
 }
