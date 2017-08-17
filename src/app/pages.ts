@@ -11,10 +11,9 @@ export const PAGES = [
 ];
 
 export const SESSION_PAGES = [
-  { title: "All Items", component: null },
-  { title: 'My Items', component: null },
-  { title: 'List Users', component: null },
-  { title: 'Session ID', component: null },
-  { title: 'Original Image', component: null },
-  { title: 'Leave Session', component: null },
+  { title: 'My Items', component: "", function: "switchSegments" },
+  { title: 'List Users', component: null, function: "openModal" },
+  { title: 'Session ID', component: null, function: "openModal" },
+  { title: 'Original Image', component: null, function: "openModal" },
+  { title: 'Leave Session', component: "", function: "" },
 ];

@@ -17,15 +17,36 @@ export class SessionPage {
   total: number;
   items: Array<Item>;
 
+  selectedItems: string;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams) {
       this.items = new Array<Item>();
       this.createNewItem(0, 11.24, 5, "Cheese Burger");
       this.createNewItem(1, 24.90, 2, "Milkshake");
-
       this.total = this.getTotal();
+
+      this.selectedItems = "all-items";
+  }
+
+  switchSegments(){
+    var buttons = document.querySelectorAll(".menu .list button");
+
+    if(this.selectedItems == "all-items")
+      this.selectedItems = "my-items";
+    else if(this.selectedItems == "my-items")
+      this.selectedItems = "all-items";
+
+    for (var i = 0; i < buttons.length; i++) {
+
+      if(buttons[i].innerHTML == "All Items") {
+        buttons[i].innerHTML = "My Items";
+      } else if(buttons[i].innerHTML == "My Items") {
+        buttons[i].innerHTML = "All Items";
+      }
     }
+  }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SessionPage');
@@ -48,26 +69,41 @@ export class SessionPage {
   }
 
   addItem(item) {
-    console.log("Added: "+item.getName());
-    // Add it to client's list of items
     item.decrementQuantity();
   }
 
   editItem(item) {
     console.log("Editing: "+item.getName());
+    // Dismiss the slide/swipe
+    // Replace spans with inputs, add a tick button at the end
+    // If tick button is pressed save all changes to local data
+    // Send changes to server
   }
 
   removeItem(item) {
-    console.log("Removing: "+item.getName());
-    // Check if User has an item to remove
-    // Remove it from client's list of items
     item.incrementQuantity();
+  }
+
+  getItemIndex(arr, id: number){
+    for(var i = 0; i<arr.length; i++){
+      if(arr[i].getId() == id)
+        return i;
+    }
+    return -1;
   }
 
   getTotal() {
     var total = 0.0;
     for(let item of this.items) {
-      total += item.getPrice();
+      total += item.getPrice()*(item.getQuantity()+item.getMyQuantity());
+    }
+    return total;
+  }
+
+  getDue() {
+    var total = 0.0;
+    for(let item of this.items) {
+      total += item.getPrice()*item.getMyQuantity();
     }
     return total;
   }

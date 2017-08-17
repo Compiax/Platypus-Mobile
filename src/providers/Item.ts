@@ -2,7 +2,8 @@ export class Item {
 
   private id: number;
   private price: number;
-  private quantity: number;
+  public quantity: number;
+  public myQuantity: number;
   private name: string;
 
   constructor(id, p, q, n) {
@@ -10,6 +11,7 @@ export class Item {
     this.price = p;
     this.quantity = q;
     this.name = n;
+    this.myQuantity = 0;
   }
 
   public setPrice(p) {
@@ -20,8 +22,16 @@ export class Item {
     this.quantity = q;
   }
 
+  public setMyQuantity(q) {
+    this.myQuantity = q;
+  }
+
   public setName(n) {
     this.name = n;
+  }
+
+  public getId() {
+    return this.id;
   }
 
   public getPrice() {
@@ -32,15 +42,25 @@ export class Item {
     return this.quantity;
   }
 
+  public getMyQuantity() {
+    return this.myQuantity;
+  }
+
   public getName() {
     return this.name;
   }
 
   public decrementQuantity() {
-    this.quantity--;
+    if(this.quantity > 0) {
+      this.quantity--;
+      this.myQuantity++;
+    }
   }
 
   public incrementQuantity() {
-    this.quantity++;
+    if(this.myQuantity > 0) {
+      this.quantity++;
+      this.myQuantity--;
+    }
   }
 }

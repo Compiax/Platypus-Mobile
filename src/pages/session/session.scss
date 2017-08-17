@@ -39,3 +39,18 @@ page-session {
 .card-modify {
   font-size: 1.2em;
 }
+
+.card-modify-disabled ion-icon {
+  visibility:hidden;
+}
+
+.split-bill-nav .toolbar-content ion-segment .segment-activated {
+  border-color: map-get($colors, light);
+}
+
+.split-bill-nav .toolbar-content ion-segment .segment-button {
+  color: map-get($colors, light);
+}
+.toolbar .segment {
+  margin: 0;
+}
