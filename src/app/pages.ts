@@ -15,5 +15,5 @@ export const SESSION_PAGES = [
   { title: 'List Users', component: null, function: "openModal" },
   { title: 'Session ID', component: null, function: "openModal" },
   { title: 'Original Image', component: null, function: "openModal" },
-  { title: 'Leave Session', component: "", function: "" },
+  { title: 'Leave Session', component: "", function: "leaveSession" },
 ];

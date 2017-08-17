@@ -2,14 +2,14 @@
   <ion-toolbar #content color="primary" class="split-bill-nav">
     <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
     <img src="assets/logos/nav-logo.png"/>
-    <ion-title>Duart's Session</ion-title>
+    <ion-title>{{ sessionOwner }}'s Session</ion-title>
 
     <ion-segment col-10 [(ngModel)]="selectedItems">
       <ion-segment-button value="all-items">
-        <ion-icon name="list-box"></ion-icon>
+        <ion-icon [ngStyle]="{ color: color }" name="list-box"></ion-icon>
       </ion-segment-button>
       <ion-segment-button value="my-items">
-        <ion-icon name="done-all"></ion-icon>
+        <ion-icon [ngStyle]="{ color: color }" name="done-all"></ion-icon>
       </ion-segment-button>
     </ion-segment>
 

@@ -44,13 +44,14 @@ export class GetStartedPage {
     // How to navigate and send information to next page
     // this.navCtrl.push('HomePage', {nickname: this.nickname, color: "#AAA"});
 
-    this.navCtrl.setRoot("HomePage");
+    // DELETE IN DEVELOPEMENT
+    this.navCtrl.setRoot("SessionPage");
+
+    //this.navCtrl.setRoot("HomePage");
   }
 
   // If the user has used the app before, skip to the home page
   ionViewWillEnter() {
-    // DELETE IN DEVELOPEMENT
-    this.navCtrl.setRoot("SessionPage");
 
     // Delete for production
     this.storage.clear();

@@ -16,17 +16,26 @@ export class SessionPage {
   pages = SESSION_PAGES;
   total: number;
   items: Array<Item>;
+  nickname: string;
+  color: string;
+  sessionOwner: string;
+  activeBackgroundColor: Object;
+  activeColor: Object;
 
   selectedItems: string;
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams) {
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private storage: Storage) {
       this.items = new Array<Item>();
-      this.createNewItem(0, 11.24, 5, "Cheese Burger");
-      this.createNewItem(1, 24.90, 2, "Milkshake");
+
+      this.createNewItem(0, 11.24, 5, "Cheese Burger"); // @todo Get this info from the server upon establishing a connection
+      this.createNewItem(1, 24.90, 2, "Milkshake");     // @todo Get this info from the server upon establishing a connection
+
       this.total = this.getTotal();
 
+      this.sessionOwner = "Duart";  // @todo Get this info from the server upon establishing a connection
       this.selectedItems = "all-items";
   }
 
@@ -62,6 +71,20 @@ export class SessionPage {
     // OR
     // @todo Get JSON and parse it straight into ionic panels
     // @todo Receive updates from scoketIO, parse it as ionic panels and update them
+    this.loadResources();
+  }
+
+  loadResources() {
+
+    this.storage.get('nickname').then((data) => {
+      this.nickname = data;
+    });
+    this.storage.get('color').then((data) => {
+      this.color = data;
+      this.activeBackgroundColor = { 'background-color': this.color };
+      this.activeColor = { 'color': this.color };
+      console.log(this.color);
+    });
   }
 
   createNewItem(id, price, quantity, name) {
@@ -106,6 +129,11 @@ export class SessionPage {
       total += item.getPrice()*item.getMyQuantity();
     }
     return total;
+  }
+
+  leaveSession() {
+    // @todo Inform the API this user is disconnecting
+    this.navCtrl.setRoot("HomePage");
   }
 
 }
