@@ -1,17 +1,26 @@
 export class Item {
 
-  private id: number;
-  private price: number;
+  public id: number;
+  public price: number;
   public quantity: number;
   public myQuantity: number;
-  private name: string;
+  public name: string;
+  public editing: boolean;
 
-  constructor(id, p, q, n) {
+  constructor(id, p, q, n);
+  constructor(id, p, q, n, e);
+
+  constructor(id, p, q, n, e?) {
     this.id = id;
     this.price = p;
     this.quantity = q;
     this.name = n;
     this.myQuantity = 0;
+    if(e != null) {
+      this.editing = e
+    } else {
+      this.editing = false;
+    }
   }
 
   public setPrice(p) {

@@ -25,6 +25,8 @@ export class SessionPage {
   activeBackgroundColor: Object;
   activeColor: Object;
 
+  maxId: number;
+
   selectedItems: string;
 
   constructor(
@@ -34,8 +36,14 @@ export class SessionPage {
     private alertService: Alert) {
       this.items = new Array<Item>();
 
-      this.createNewItem(0, 11.24, 5, "Cheese Burger"); // @todo Get this info from the server upon establishing a connection
+      this.maxId = 0;
+
+      this.createNewItem(0, 43.50, 5, "Cheese Burger"); // @todo Get this info from the server upon establishing a connection
       this.createNewItem(1, 24.90, 2, "Milkshake");     // @todo Get this info from the server upon establishing a connection
+      this.createNewItem(2, 32.90, 1, "Chicken Wrap");     // @todo Get this info from the server upon establishing a connection
+      this.createNewItem(3, 18.00, 3, "Filter Coffee");     // @todo Get this info from the server upon establishing a connection
+      this.createNewItem(4, 25.90, 2, "Toasted Cheese");     // @todo Get this info from the server upon establishing a connection
+      this.createNewItem(5, 5.90, 1, "Extra Bacon");     // @todo Get this info from the server upon establishing a connection
 
       this.total = this.getTotal();
       this.gratuityPercent = 10;
@@ -144,27 +152,80 @@ export class SessionPage {
     });
   }
 
-  createNewItem(id, price, quantity, name) {
-    this.items.push(new Item(id, price, quantity, name));
+  createNewItem(id:number, price:number, quantity:number, name:string): void;
+  createNewItem(): void;
+
+  createNewItem(id?:number, price?:number, quantity?:number, name?:string): void {
+    if(id != null && price != null && quantity != null && name != null){
+
+      this.items.push(new Item(id, price, quantity, name));
+
+      if(this.maxId < id)
+        this.maxId = id;
+
+    } else {
+        var newItem = new Item(this.maxId+1, 0, 0, "", true);
+        console.log("Create: ID: "+newItem.getId());
+
+        this.items.push(newItem);
+        // this.editItem(newItem);
+    }
   }
 
   addItem(item) {
     item.decrementQuantity();
+    // Send changes to API
   }
 
-  editItem(item) {
-    console.log("Editing: "+item.getName());
-    // Dismiss the slide/swipe
-    // Replace spans with inputs, add a tick button at the end
-    // If tick button is pressed save all changes locally
-    // Send changes to API
+  addAllItems(item) {
+    while(item.getQuantity() != 0)
+      item.decrementQuantity();
   }
 
   removeItem(item) {
     item.incrementQuantity();
+    // Send changes to API
   }
 
-  getItemIndex(arr, id: number){
+  editItemHandler(item, slider) {
+
+    console.log("Handling Edit: "+item.getName());
+    slider.close();
+    this.editItem(item);
+  }
+
+  editItem(item) {
+
+    console.log("Editing: "+item.getName());
+    var itemContainer = document.getElementById(item.getId()); // NULL, wait for it to exist
+    console.log("pre error");
+    var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
+    console.log("post error");
+
+    for (var i = 0; i < elementList.length; ++i)
+        elementList[i].style.display = "inline-block";
+
+    (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="none";
+    (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="inline";
+
+  }
+
+  closeEdit(item, e) {
+
+    console.log("Closing: "+item.getName());
+    var itemContainer = document.getElementById(item.getId());
+    var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
+
+    for (var i = 0; i < elementList.length; ++i)
+        elementList[i].style.display = "none";
+
+    (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="inline";
+    (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="none";
+
+    // Send changes to API (API: Check if the item ID exists, if not, create the item)
+  }
+
+  getItemIndex(arr, id: number) {
     for(var i = 0; i<arr.length; i++){
       if(arr[i].getId() == id)
         return i;
@@ -174,17 +235,17 @@ export class SessionPage {
 
   getTotal() {
     var total = 0.0;
-    for(let item of this.items) {
+    for(let item of this.items)
       total += item.getPrice()*(item.getQuantity()+item.getMyQuantity());
-    }
+
     return total;
   }
 
   getDue() {
     var due = 0.0;
-    for(let item of this.items) {
+    for(let item of this.items)
       due += item.getPrice()*item.getMyQuantity();
-    }
+
     return due;
   }
 

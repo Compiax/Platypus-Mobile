@@ -1,15 +1,19 @@
 <ion-header>
   <ion-toolbar #content color="primary" class="split-bill-nav">
-    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
-    <img src="assets/logos/nav-logo.png"/>
-    <ion-title>{{ sessionOwner }}'s Session</ion-title>
-
-    <ion-segment col-10 [(ngModel)]="selectedItems">
+    <ion-row>
+      <ion-col col-2>
+        <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+      </ion-col>
+      <ion-col col-10>
+        <ion-title>{{ sessionOwner }}'s Session</ion-title>
+      </ion-col>
+    </ion-row>
+    <ion-segment [(ngModel)]="selectedItems">
       <ion-segment-button value="all-items">
-        <ion-icon [ngStyle]="{ color: color }" name="list-box"></ion-icon>
+        <ion-icon [ngStyle]="{ color: color }" name="list-box"></ion-icon><span>All Items</span>
       </ion-segment-button>
       <ion-segment-button value="my-items">
-        <ion-icon [ngStyle]="{ color: color }" name="done-all"></ion-icon>
+        <ion-icon [ngStyle]="{ color: color }" name="done-all"></ion-icon><span>My Items</span>
       </ion-segment-button>
     </ion-segment>
 
@@ -29,47 +33,97 @@
   </ion-content>
 </ion-menu>
 
-<ion-content ion-row padding text-center  [ngSwitch]="selectedItems">
+<ion-content id="session" ion-row padding text-center [ngSwitch]="selectedItems">
   <ion-list *ngSwitchCase="'all-items'">
-    <ng-container *ngFor="let itemIter of items">
-      <ion-item-sliding class="card-container" #item>
+    <ng-container *ngFor="let itemIter of items; let index = index; trackBy:trackByIndex;">
 
-        <ion-item class=card-top>
-            <span class="card-info card-price">R<span>{{itemIter.getPrice()}}</span></span>
-            <span class="card-info card-name">{{itemIter.getName()}}</span>
-            <span class="card-info card-quantity">{{itemIter.getQuantity()}}</span>
+      <ion-item-sliding class="card-container" #item id="{{itemIter.getId()}}" (ionDrag)="closeEdit(itemIter, $event)">
+
+        <ion-item class="card-top">
+          <ion-grid>
+            <ion-row>
+              <ion-col class="card-info card-info-price" col-3>
+                <span class="edit-item-input edit-item-price"><input type="text" [(ngModel)]="itemIter.price"/></span>
+                R<span class="card-price">{{itemIter.getPrice()}}</span>
+              </ion-col>
+              <ion-col class="card-info card-info-name" col-7>
+                <span class="edit-item-input edit-item-name"><input type="text" [(ngModel)]="itemIter.name"/></span>
+                <span class="card-name">{{itemIter.getName()}}</span>
+              </ion-col>
+              <ion-col class="card-info card-info-quantity" col-2>
+                <span class="edit-item-input edit-item-quantity"><input type="text" [(ngModel)]="itemIter.quantity"/></span>
+                <span class="card-quantity">{{itemIter.getQuantity()}}</span>
+              </ion-col>
+              <ion-col col-1 class="card-info card-info-indicator">
+                <span class="card-drag"><ion-icon name="md-more"></ion-icon><ion-icon name="md-more"></ion-icon></span>
+                <span class="card-confirm"><button (click)="closeEdit(itemIter, $event)" [ngStyle]="{ color: color }"><ion-icon name="checkmark-circle"></ion-icon></button></span>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-item>
 
         <ion-item-options class="card-bottom" side="right">
 
-          <button ion-button icon-only round clear small (click)="removeItem(itemIter)" class="card-modify card-remove" [ngClass]="itemIter.getMyQuantity() <= 0 ? 'card-modify-disabled' : ''">
-            <ion-icon name="remove-circle"></ion-icon>
+          <button ion-button icon-only round clear small (click)="addAllItems(itemIter)" class="card-modify card-add-all" [ngClass]="itemIter.getQuantity() <= 0 ? 'card-modify-disabled' : ''">
+            <ion-icon name="done-all"></ion-icon>
           </button>
 
-          <button ion-button icon-only round clear small (click)="addItem(itemIter)" class="card-modify card-claim">
-            <ion-icon name="add-circle"></ion-icon>
+          <button ion-button icon-only round clear small (click)="addItem(itemIter)" class="card-modify card-claim" [ngClass]="itemIter.getQuantity() <= 0 ? 'card-modify-disabled' : ''">
+            <ion-icon name="checkmark"></ion-icon>
           </button>
 
         </ion-item-options>
 
         <ion-item-options class="card-bottom" side="left">
-          <button ion-button icon-only round clear small (click)="editItem(itemIter)" class="card-modify card-edit">
+          <button ion-button icon-only round clear small (click)="editItemHandler(itemIter, item)" class="card-modify card-edit">
             <ion-icon name="hammer"></ion-icon>
           </button>
         </ion-item-options>
 
     </ion-item-sliding>
+
+    <!-- @todo Fix -->
+    <!-- <ng-container *ngIf="itemIter.editing == true; then editItem(itemIter)"></ng-container> -->
+
     </ng-container>
+
+    <ion-item class="create-item">
+      <button (click)="createNewItem()">
+        <ion-grid>
+          <ion-row>
+            <ion-col class="card-info card-info-price" col-3>
+              <ion-icon name="add"></ion-icon>
+            </ion-col>
+            <ion-col class="card-info card-info-name" col-7>
+              <span>Create item</span>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </button>
+    </ion-item>
   </ion-list>
 
   <ion-list *ngSwitchCase="'my-items'">
     <ng-container *ngFor="let itemIter of items">
-      <ion-item-sliding class="card-container" *ngIf="itemIter.getMyQuantity() > 0" #item>
+        <ion-item-sliding class="card-container" *ngIf="itemIter.getMyQuantity() > 0" #item id="{{itemIter.getId()}}">
 
-          <ion-item class=card-top>
-              <span class="card-info card-price">R<span>{{itemIter.getPrice()}}</span></span>
-              <span class="card-info card-name">{{itemIter.getName()}}</span>
-              <span class="card-info card-quantity">{{itemIter.getMyQuantity()}}</span>
+          <ion-item class="card-top">
+            <ion-grid>
+              <ion-row>
+                <ion-col class="card-info card-info-price" col-3>
+                  R<span class="card-price">{{itemIter.getPrice()}}</span>
+                </ion-col>
+                <ion-col class="card-info card-info-name" col-7>
+                  <span class="card-name">{{itemIter.getName()}}</span>
+                </ion-col>
+                <ion-col class="card-info card-info-quantity" col-2>
+                  <span class="card-quantity">{{itemIter.getMyQuantity()}}</span>
+                </ion-col>
+                <ion-col col-1 class="card-info card-info-indicator">
+                  <span class="card-drag"><ion-icon name="md-more"></ion-icon><ion-icon name="md-more"></ion-icon></span>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
           </ion-item>
 
           <ion-item-options class="card-bottom" side="right">
@@ -79,15 +133,9 @@
             </button>
 
             <button ion-button icon-only round clear small (click)="addItem(itemIter)" class="card-modify card-claim" [ngClass]="itemIter.getQuantity() <= 0 ? 'card-modify-disabled' : ''">
-              <ion-icon name="add-circle"></ion-icon>
+              <ion-icon name="checkmark"></ion-icon>
             </button>
 
-          </ion-item-options>
-
-          <ion-item-options class="card-bottom" side="left">
-            <button ion-button icon-only round clear small (click)="editItem(itemIter)" class="card-modify card-edit">
-              <ion-icon name="hammer"></ion-icon>
-            </button>
           </ion-item-options>
 
       </ion-item-sliding>
@@ -97,12 +145,12 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar color="primary">
-    <ion-title class="bill-total">Bill Total: <span class="bill-total-amount">R{{ getTotal().toFixed(2) }}</span></ion-title>
-    <ion-title [ngStyle]="{ backgroundColor: color }" class="bill-nickname">{{nickname}}:</ion-title>
-    <ion-title offset-1>Due: <span class="bill-due">R{{ getDue().toFixed(2) }}</span></ion-title>
-    <ion-title offset-1>Gratuity: <span class="bill-gratuity">R{{ getGratuity().toFixed(2) }}</span> at
-      <input [(ngModel)]="gratuityPercent" col-2 type="number" value="{{ gratuityPercent }}"/> %
+    <ion-title class="bill-total">Bill Total<span class="bill-total-amount">R{{ getTotal().toFixed(2) }}</span></ion-title>
+    <ion-title [ngStyle]="{ backgroundColor: color }" class="bill-nickname">{{nickname}}</ion-title>
+    <ion-title>Due<span class="bill-due">R{{ getDue().toFixed(2) }}</span></ion-title>
+    <ion-title>Tip<span class="bill-gratuity">R{{ getGratuity().toFixed(2) }}</span> at
+      <ion-col class="gratuity-input" col-2><input [(ngModel)]="gratuityPercent" type="number" value="{{ gratuityPercent }}"/> %</ion-col>
     </ion-title>
-    <ion-title offset-1>Total Due: <span class="bill-total-due">R{{ getTotalDue().toFixed(2) }}</span></ion-title>
+    <ion-title>Total Due<span class="bill-total-due">R{{ getTotalDue().toFixed(2) }}</span></ion-title>
   </ion-toolbar>
 </ion-footer>
