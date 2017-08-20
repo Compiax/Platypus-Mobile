@@ -41,9 +41,6 @@ export class GetStartedPage {
     if(this.nickname != "" && this.nickname != null) { this.storage.set('nickname', this.nickname); }
     this.storage.set('color', this.color);
 
-    // How to navigate and send information to next page
-    // this.navCtrl.push('HomePage', {nickname: this.nickname, color: "#AAA"});
-
     this.navCtrl.setRoot("HomePage");
   }
 
