@@ -1,0 +1,182 @@
+page-session {
+
+}
+
+#session .scroll-content {
+  background-image: url("../../assets/logos/nav-logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60%;
+}
+
+.card-container {
+  position: relative;
+}
+
+.split-bill-nav .row button {
+  left: 0;
+}
+
+ion-title div span {
+  position: absolute;
+  right: 20px;
+}
+
+.card-top {
+  color: map-get($colors, light);
+  position: relative;
+  background-color: map-get($colors, primary);
+}
+
+.edit-item-input input {
+  background-color: map-get($colors, secondary);
+  color: map-get($colors, light);
+  border: none;
+  border-radius: 3px;
+  padding: 5px 10px;
+  width: 100%;
+}
+
+.edit-item-input {
+  position: absolute;
+  display: none;
+  width: calc(100% - 10px);
+  top: 0px;
+}
+
+.list .card-container .item .item-inner, .list .card-container ion-item-options {
+  border-top: 1px;
+  border-left: 1px;
+  border-right: 1px;
+  border-bottom: 1px;
+}
+
+.card-info-indicator .card-drag ion-icon {
+  margin-right: 0.1em;
+}
+
+.card-info-indicator {
+  right: 0;
+  font-size: 1.7em;
+  position: absolute;
+  padding: 0;
+  text-align: center;
+}
+
+.card-confirm button {
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8em;
+  background-color: rgba(0,0,0,0);
+}
+
+.card-confirm {
+  display: none;
+  width: 100%;
+}
+
+.edit-item-quantity input{
+  padding-right: 0;
+  width: calc(100% - 5px);
+}
+
+.card-bottom {
+  background-color: map-get($colors, accents01);
+}
+
+.card-modify {
+  font-size: 1.2em;
+}
+
+.card-modify-disabled ion-icon {
+  color:  map-get($colors, accents02);
+}
+
+.split-bill-nav .toolbar-content ion-segment .segment-button {
+  color: map-get($colors, light);
+  font-size: 1.2rem;
+}
+
+.split-bill-nav .toolbar-content ion-segment .segment-button span {
+  vertical-align: middle;
+}
+
+.split-bill-nav .toolbar-content ion-segment .segment-activated {
+  border-color: map-get($colors, light);
+  font-size: 1.5rem;
+}
+
+.split-bill-nav .toolbar-content ion-segment .segment-button ion-icon {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.toolbar .segment {
+  margin: 0;
+}
+
+ion-footer .toolbar {
+  padding: 20px 0;
+  box-shadow: 0px -1px 5px #111;
+}
+
+ion-footer .title .toolbar-title {
+  color: map-get($colors, accents01);
+  padding: 3px 20px;
+}
+
+ion-footer .title .toolbar-title span {
+  font-weight: normal;
+  color: map-get($colors, light);
+}
+
+ion-footer .bill-total {
+  box-shadow: 0px 5px 5px -4px #111;
+  padding-bottom: 20px;
+}
+
+ion-footer .bill-nickname .toolbar-title {
+  color: map-get($colors, primary);
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+ion-footer .bill-nickname {
+  display: inline-block;
+  margin-top: 20px;
+  border-radius: 3px;
+  margin-left: 20px;
+}
+
+ion-footer .toolbar  .toolbar-content .title .toolbar-title input {
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  background-color: map-get($colors, accents01);
+  border-radius: 3px;
+  border: none;
+  color: map-get($colors, light);
+  box-shadow: 0px 0px 5px #111;
+  width: calc(100% - 10px);
+}
+
+ion-footer .toolbar  .toolbar-content .title .toolbar-title .gratuity-input {
+  position: absolute;
+  display: inline-block;
+  bottom: 0;
+}
+
+.create-item {
+  background-color: map-get($colors, accents01);
+  // font-weight: bold;
+}
+
+.create-item button {
+  color: map-get($colors, primary);
+  background: rgba(0,0,0,0);
+  font-size: 2rem;
+}
+.create-item button span {
+  margin-left: 20px;
+}

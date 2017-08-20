@@ -4,8 +4,7 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { File } from '@ionic-native/file';
 
 // API server URL
-const URL = 'http://192.168.43.140:3000/mobile';
-// const URL = 'http://192.168.43.144:3000/mobile';
+const URL = 'http://192.168.1.114:3000/mobile';
 const HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'};
 
 @Injectable()
@@ -27,7 +26,7 @@ export class HttpProvider {
   createSession(nickname, color) {
 
     console.log("Sending Data...");
-    let data = {"nickname": nickname, "color": color};
+    let data = {"nickname": nickname.toLowerCase(), "color": color.toLowerCase()};
     let url = URL+"/createSession";
     let responseJSON = this.http.post(url, data, HEADERS);
     console.log("Returing response...");
@@ -39,13 +38,13 @@ export class HttpProvider {
   * @param  {Integer}  session_id The session id of the session to join
   * @return {String}              A JSON string containing a new user_id for the joining client
   */
-  joinSession(session_id) {
+  joinSession(session_id, nickname, color) {
 
     // Set HTTP request parameters
-    let data = {"session_id": session_id};
+    let data = {"session_id": session_id.toLowerCase(), "nickname": nickname.toLowerCase(), "color": color.toLowerCase()};
     let url = URL+"/joinSession";
 
-    console.log("Sending join session data to API server")
+    console.log("Sending join session data to API server: "+session_id)
     let responseJSON = this.http.post(url, data, HEADERS);
     console.log("Returing response...");
     return responseJSON;

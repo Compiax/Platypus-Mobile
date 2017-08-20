@@ -14,12 +14,20 @@ import { FileTransfer } from '@ionic-native/file-transfer';
 import { File } from '@ionic-native/file';
 
 import { MyApp } from './app.component';
+
+//Pages
 import { GetStartedPage } from '../pages/get-started/get-started';
+
+// Modals
+import { ProfileModal } from '../modals/profile/profile';
+import { AboutModal } from '../modals/about/about';
 
 @NgModule({
   declarations: [
     MyApp,
-    GetStartedPage
+    GetStartedPage,
+    ProfileModal,
+    AboutModal
   ],
   imports: [
     BrowserModule,
@@ -29,7 +37,9 @@ import { GetStartedPage } from '../pages/get-started/get-started';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    GetStartedPage
+    GetStartedPage,
+    ProfileModal,
+    AboutModal
   ],
   providers: [
     StatusBar,

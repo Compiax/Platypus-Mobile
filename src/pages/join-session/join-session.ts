@@ -3,12 +3,13 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { HttpProvider } from '../../providers/HttpProvider';
 import { Timeout } from '../../providers/Timeout';
+import { Alert } from '../../providers/Alert';
 
 @IonicPage()
 @Component({
   selector: 'page-join-session',
   templateUrl: 'join-session.html',
-  providers:[HttpProvider, Timeout]
+  providers:[HttpProvider, Timeout, Alert]
 })
 export class JoinSessionPage {
 
@@ -25,27 +26,41 @@ export class JoinSessionPage {
    * Attempts to join an session and saves the response locally
    * @param {String} session_id The id of the session to join
    */
-  joinSession(session_id): void {
+  joinSession(): void {
     var thisPage = this;
-
-    console.log("Call http provider's joinSession");
-    thisPage.timeout.startTimeout("requesting join session from httpProvider");
-    thisPage.httpProvider.joinSession(session_id).then( (json) => {
+    console.log("SESSION_ID: "+this.session_id)
+    thisPage.timeout.startTimeout("get stored nickname");
+    thisPage.storage.get('nickname').then(nickname => {
 
       thisPage.timeout.endTimeout();
 
-      var session_vars = JSON.parse(json.data);
+      console.log("Sending nickname: "+nickname);
 
-      console.log("joinSession Response JSON: "+session_vars);
-      var user_id = session_vars.user_id;
-      console.log("joinSession Response JSON user_id: "+user_id);
-      // console.log("joinSession Response JSON: "+session_vars);
-      // var user_id = session_vars.data.attributes.user_id;
-      // console.log("joinSession Response JSON user_id: "+user_id);
+      thisPage.timeout.startTimeout("get stored color");
+      thisPage.storage.get('color').then(color => {
 
-      thisPage.storeJoinSessionResponse(session_id, user_id);
+        thisPage.timeout.endTimeout();
 
-    }, (err) => { console.log("Join Session Error: "+err) });
+        console.log("Sending color: "+color);
+
+        thisPage.httpProvider.joinSession(this.session_id, nickname, color).then( (json) => {
+
+          thisPage.timeout.endTimeout();
+
+          var session_vars = JSON.parse(json.data);
+
+          console.log("joinSession Response JSON: "+session_vars);
+          var user_id = session_vars.user_id;
+          console.log("joinSession Response JSON user_id: "+user_id);
+
+          thisPage.storeJoinSessionResponse(this.session_id, user_id);
+
+        }, (err) => {
+          console.log("Join Session Error: "+err)
+        });
+      });
+    });
+
   }
 
   /**
@@ -67,8 +82,8 @@ export class JoinSessionPage {
 
         thisPage.timeout.endTimeout();
 
-        // console.log("Redirecting to JoinSessionPage");
-        // thisPage.navCtrl.push('SessionPage', {session_id: session_id});
+        console.log("Redirecting to SessionPage");
+        this.navCtrl.setRoot("SessionPage");
 
       }, (err) => {
         console.log("Storing user_id "+user_id+" in local storage failed...");
