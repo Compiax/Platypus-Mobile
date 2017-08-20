@@ -26,9 +26,9 @@ export class JoinSessionPage {
    * Attempts to join an session and saves the response locally
    * @param {String} session_id The id of the session to join
    */
-  joinSession(session_id): void {
+  joinSession(): void {
     var thisPage = this;
-
+    console.log("SESSION_ID: "+this.session_id)
     thisPage.timeout.startTimeout("get stored nickname");
     thisPage.storage.get('nickname').then(nickname => {
 
@@ -43,7 +43,7 @@ export class JoinSessionPage {
 
         console.log("Sending color: "+color);
 
-        thisPage.httpProvider.joinSession(session_id, nickname, color).then( (json) => {
+        thisPage.httpProvider.joinSession(this.session_id, nickname, color).then( (json) => {
 
           thisPage.timeout.endTimeout();
 
@@ -52,11 +52,8 @@ export class JoinSessionPage {
           console.log("joinSession Response JSON: "+session_vars);
           var user_id = session_vars.user_id;
           console.log("joinSession Response JSON user_id: "+user_id);
-          // console.log("joinSession Response JSON: "+session_vars);
-          // var user_id = session_vars.data.attributes.user_id;
-          // console.log("joinSession Response JSON user_id: "+user_id);
 
-          thisPage.storeJoinSessionResponse(session_id, user_id);
+          thisPage.storeJoinSessionResponse(this.session_id, user_id);
 
         }, (err) => {
           console.log("Join Session Error: "+err)

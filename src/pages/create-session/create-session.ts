@@ -60,6 +60,9 @@ export class CreateSessionPage {
           thisPage.timeout.endTimeout();
           console.log("Success: "+data);
 
+          console.log("Redirecting to SessionPage");
+          this.navCtrl.setRoot("SessionPage");
+
           // console.log("Cleaning up");
           // thisPage.camera.cleanup().then((data) => {
           //   console.log("Clean up successful");
@@ -114,7 +117,6 @@ export class CreateSessionPage {
 
           thisPage.storeCreateSessionResponse(session_id, user_id);
 
-          thisPage.captureImage(session_id);
         });
       });
     });
@@ -139,8 +141,7 @@ export class CreateSessionPage {
 
         thisPage.timeout.endTimeout();
 
-        //console.log("Redirecting to JoinSessionPage");
-        //thisPage.navCtrl.push('SessionPage', {session_id: session_id});
+        thisPage.captureImage(session_id);
 
       }, (err) => {
         console.log("Storing user_id "+user_id+" in local storage failed...");

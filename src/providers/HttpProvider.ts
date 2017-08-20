@@ -26,7 +26,7 @@ export class HttpProvider {
   createSession(nickname, color) {
 
     console.log("Sending Data...");
-    let data = {"nickname": nickname, "color": color};
+    let data = {"nickname": nickname.toLowerCase(), "color": color.toLowerCase()};
     let url = URL+"/createSession";
     let responseJSON = this.http.post(url, data, HEADERS);
     console.log("Returing response...");
@@ -41,10 +41,10 @@ export class HttpProvider {
   joinSession(session_id, nickname, color) {
 
     // Set HTTP request parameters
-    let data = {"session_id": session_id, "nickname": nickname, "color": color};
+    let data = {"session_id": session_id.toLowerCase(), "nickname": nickname.toLowerCase(), "color": color.toLowerCase()};
     let url = URL+"/joinSession";
 
-    console.log("Sending join session data to API server")
+    console.log("Sending join session data to API server: "+session_id)
     let responseJSON = this.http.post(url, data, HEADERS);
     console.log("Returing response...");
     return responseJSON;
