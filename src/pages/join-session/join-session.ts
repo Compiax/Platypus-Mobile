@@ -18,84 +18,119 @@ export class JoinSessionPage {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private storage: Storage,
+    protected storage: Storage,
     private httpProvider: HttpProvider,
     private timeout: Timeout) { }
 
   /**
-   * Attempts to join an session and saves the response locally
-   * @param {String} session_id The id of the session to join
+   * Attempts to join a session through promise chaining and saves the response locally
    */
   joinSession(): void {
-    var thisPage = this;
-    console.log("SESSION_ID: "+this.session_id)
-    thisPage.timeout.startTimeout("get stored nickname");
-    thisPage.storage.get('nickname').then(nickname => {
 
-      thisPage.timeout.endTimeout();
+    this.timeout.startTimeout("Getting Nickname");  // Initial timeout
+    this.getNickname(this)
+    .then( (data) => { this.timeout.timeoutHandler("Getting Color"); return this.getColor(data, this); })
+    .then( (data) => { this.timeout.timeoutHandler("Sending Join Request to Server"); return this.sendJoinRequest(data, this); })
+    .then( (data) => { this.timeout.timeoutHandler("Storing User ID"); return this.storeUserId(data, this); })
+    .then( (data) => { this.timeout.timeoutHandler("Storing Session ID"); return this.storeSessionId(this); })
+    .then( (data) => {
 
-      console.log("Sending nickname: "+nickname);
+      this.timeout.endTimeout();  // Stop timeout chain
 
-      thisPage.timeout.startTimeout("get stored color");
-      thisPage.storage.get('color').then(color => {
-
-        thisPage.timeout.endTimeout();
-
-        console.log("Sending color: "+color);
-
-        thisPage.httpProvider.joinSession(this.session_id, nickname, color).then( (json) => {
-
-          thisPage.timeout.endTimeout();
-
-          var session_vars = JSON.parse(json.data);
-
-          console.log("joinSession Response JSON: "+session_vars);
-          var user_id = session_vars.user_id;
-          console.log("joinSession Response JSON user_id: "+user_id);
-
-          thisPage.storeJoinSessionResponse(this.session_id, user_id);
-
-        }, (err) => {
-          console.log("Join Session Error: "+err)
-        });
-      });
+      console.log("Redirecting to SessionPage");
+      this.navCtrl.setRoot("SessionPage");
     });
-
   }
 
   /**
-   * Stores the parameters in local storage from the response of joining a session
-   * @param  {String} session_id The ID of the session the client joined
-   * @param  {String} user_id    The user ID of the client
+   * Attempts to retrieve the locally stored nickname
+   * @param  {} scope Reference to the class scope
    */
-  storeJoinSessionResponse(session_id, user_id) {
+  getNickname(scope){
 
-    var thisPage = this;
+    console.log("Attempting to retrieve the user's nickname");
+    return new Promise(function (resolve, reject) {
+      scope.storage.get('nickname').then(nickname => {
 
-    thisPage.timeout.startTimeout("saving session_id to local storage");
-    thisPage.storage.set('session_id', session_id).then( (data) => {
+        console.log("Successfully retrieved the nickname: "+nickname);
+        resolve(nickname);
 
-      thisPage.timeout.endTimeout();
-
-      thisPage.timeout.startTimeout("saving user_id to local storage");
-      thisPage.storage.set('user_id', user_id).then( (data) => {
-
-        thisPage.timeout.endTimeout();
-
-        console.log("Redirecting to SessionPage");
-        this.navCtrl.setRoot("SessionPage");
-
-      }, (err) => {
-        console.log("Storing user_id "+user_id+" in local storage failed...");
-      });
-
-    }, (err) => {
-      console.log("Storing session_id "+session_id+" in local storage failed...");
+      }, (err) => { reject(err) });
     });
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad JoinSessionPage');
+  /**
+   * Attempts to retrieve the locally stored color
+   * @param  {string} input Input from the previous chained call (nickname)
+   * @param  {} scope Reference to the class scope
+   */
+  getColor(input, scope){
+
+    console.log("Attempting to retrieve the user's color");
+    return new Promise(function (resolve, reject) {
+      scope.storage.get('color').then(color => {
+
+        console.log("Successfully retrieved the color: "+color);
+        resolve({ nickname: input, color:color });
+
+      }, (err) => { reject(err) });
+    });
+  }
+
+  /**
+   * Attempts to send a request to the server to join the session
+   * @param  {string} input Input from the previous chained call ({nickname, color})
+   * @param  {} scope Reference to the class scope
+   */
+  sendJoinRequest(input, scope) {
+
+    console.log("Attempting to send a request to the server to join a session");
+    return new Promise(function (resolve, reject) {
+      scope.httpProvider.joinSession(scope.session_id, input.nickname, input.color).then( (json) => {
+
+        var session_vars = JSON.parse(json.data);
+        var user_id = session_vars.user_id;
+
+        console.log("Successfully joined the session and retrieved the User ID: "+user_id);
+        resolve(session_vars.user_id);
+
+      }, (err) => { reject(err) });
+    });
+  }
+
+  /**
+   * Attempts to store the user id locally
+   * @param  {string} input Input from the previous chained call (user id)
+   * @param  {} scope Reference to the class scope
+   */
+  storeUserId(input, scope){
+
+    console.log("Attempting to store the User ID");
+    return new Promise(function (resolve, reject) {
+      scope.storage.set('user_id', input).then( (data) => {
+
+        console.log("Successfully stored User ID: "+input);
+        resolve(input);
+
+      }, (err) => { reject(err) });
+    });
+  }
+
+  /**
+   * Attempts to store the session id locally
+   * @param  {} scope Reference to the class scope
+   */
+  storeSessionId(scope){
+
+    console.log("Attempting to store the Session ID");
+    return new Promise(function (resolve, reject) {
+      scope.storage.set('session_id', scope.session_id).then( (data) => {
+
+        console.log("Successfully stored User ID: "+scope.session_id);
+        resolve(scope.session_id);
+
+      }, (err) => { reject(err) });
+    });
   }
 
 }
