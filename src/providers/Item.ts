@@ -7,20 +7,12 @@ export class Item {
   public name: string;
   public editing: boolean;
 
-  constructor(id, p, q, n);
-  constructor(id, p, q, n, e);
-
-  constructor(id, p, q, n, e?) {
-    this.id = id;
+  constructor(p, q, n, id) {
     this.price = p;
     this.quantity = q;
     this.name = n;
     this.myQuantity = 0;
-    if(e != null) {
-      this.editing = e
-    } else {
-      this.editing = false;
-    }
+    this.id = id;
   }
 
   public setPrice(p) {

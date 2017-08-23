@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 import { Alert } from '../../providers/Alert';
+import { IOProvider } from '../../providers/IOProvider';
 
 // Used for storing user data locally
 import { Storage } from '@ionic/storage';
@@ -11,7 +12,7 @@ import { Item } from '../../providers/Item';
 @Component({
   selector: 'page-session',
   templateUrl: 'session.html',
-  providers:[Alert]
+  providers:[IOProvider, Alert]
 })
 export class SessionPage {
 
@@ -21,6 +22,8 @@ export class SessionPage {
   items: Array<Item>;
   nickname: string;
   color: string;
+  session_id: string;
+  user_id: number;
   sessionOwner: string;
   activeBackgroundColor: Object;
   activeColor: Object;
@@ -33,17 +36,18 @@ export class SessionPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     private storage: Storage,
-    private alertService: Alert) {
+    private alertService: Alert,
+    private ioProvider: IOProvider) {
       this.items = new Array<Item>();
 
       this.maxId = 0;
 
-      this.createNewItem(0, 43.50, 5, "Cheese Burger"); // @todo Get this info from the server upon establishing a connection
-      this.createNewItem(1, 24.90, 2, "Milkshake");     // @todo Get this info from the server upon establishing a connection
-      this.createNewItem(2, 32.90, 1, "Chicken Wrap");     // @todo Get this info from the server upon establishing a connection
-      this.createNewItem(3, 18.00, 3, "Filter Coffee");     // @todo Get this info from the server upon establishing a connection
-      this.createNewItem(4, 25.90, 2, "Toasted Cheese");     // @todo Get this info from the server upon establishing a connection
-      this.createNewItem(5, 5.90, 1, "Extra Bacon");     // @todo Get this info from the server upon establishing a connection
+      this.items.push(new Item(43.50, 5, "Cheese Burger", 0));
+      this.items.push(new Item(24.90, 2, "Milkshake", 1));
+      this.items.push(new Item(18.00, 3, "Filter Coffee", 2));
+      this.items.push(new Item(25.90, 2, "Toasted Cheese", 3));
+      this.items.push(new Item(5.90, 1, "Extra Bacon", 4));
+      this.items.push(new Item(32.90, 1, "Chicken Wrap", 5));
 
       this.total = this.getTotal();
       this.gratuityPercent = 10;
@@ -76,18 +80,20 @@ export class SessionPage {
 
   ionViewWillEnter() {
 
-    this.validateSession()
-    .then(this.validateUser)
-    .then(this.getAllSessionData)
-    .then(this.startSocketIO);
+    this.loadResources()
+    .then(this.validateSession, this.redirectHome)
+    .then(this.validateUser, this.redirectHome)
+    .then(this.getAllSessionData, this.redirectHome)
+    .then(function(){}, this.redirectHome);
 
-    // @todo Check session_id is stored and correct
-    // @todo Check user_id is stored and correct
-    // @todo If valid client, start socketIO
-
-    // @todo Get JSON and parse it straight into ionic panels
-    // @todo Receive updates from scoketIO, parse it as ionic panels and update them
     this.loadResources();
+  }
+
+  redirectHome(err?){
+    if(err != null)
+      console.log(err);
+    console.log("Redirecting home");
+    this.navCtrl.setRoot("HomePage");
   }
 
   validateSession() {
@@ -126,65 +132,54 @@ export class SessionPage {
     });
   }
 
-  startSocketIO(){
-    return new Promise(function (resolve, reject) {
-      if(1 == 1) {
-        console.log("Started SocketIO communicated successfully");
-        resolve("Started SocketIO communicated successfully");
-      } else {
-        console.log("SocketIO communication broke");
-        reject(Error("SocketIO communication broke"));
-      }
-    });
-  }
-
   loadResources() {
+    return new Promise(function (resolve, reject) {
 
-    this.storage.get('nickname').then((data) => {
-      this.nickname = data;
-    });
+      this.storage.get('session_id').then((data) => {
+        this.session_id = data;
+        this.storage.get('user_id').then((data) => {
+          this.user_id = data;
+          this.storage.get('nickname').then((data) => {
+            this.nickname = data;
+            this.storage.get('color').then((data) => {
+              this.color = data;
+              this.activeBackgroundColor = { 'background-color': this.color };
+              this.activeColor = { 'color': this.color };
+              console.log(this.color);
+              resolve();
+            });
+          });
+        });
+      });
 
-    this.storage.get('color').then((data) => {
-      this.color = data;
-      this.activeBackgroundColor = { 'background-color': this.color };
-      this.activeColor = { 'color': this.color };
-      console.log(this.color);
     });
   }
 
-  createNewItem(id:number, price:number, quantity:number, name:string): void;
-  createNewItem(): void;
+  createNewItem() {
+      var newItem = new Item(0, 0, "", -1);
+      this.items.push(newItem);
+      this.editItem(newItem);
+  }
 
-  createNewItem(id?:number, price?:number, quantity?:number, name?:string): void {
-    if(id != null && price != null && quantity != null && name != null){
-
-      this.items.push(new Item(id, price, quantity, name));
-
-      if(this.maxId < id)
-        this.maxId = id;
-
-    } else {
-        var newItem = new Item(this.maxId+1, 0, 0, "", true);
-        console.log("Create: ID: "+newItem.getId());
-
-        this.items.push(newItem);
-        // this.editItem(newItem);
-    }
+  deleteItem(item) {
+    this.items.splice(this.items.indexOf(item), 1);
+    this.ioProvider.deleteItem(this.session_id, item.getId());
   }
 
   addItem(item) {
     item.decrementQuantity();
-    // Send changes to API
+    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   addAllItems(item) {
     while(item.getQuantity() != 0)
       item.decrementQuantity();
+    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   removeItem(item) {
     item.incrementQuantity();
-    // Send changes to API
+    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   editItemHandler(item, slider) {
@@ -198,9 +193,7 @@ export class SessionPage {
 
     console.log("Editing: "+item.getName());
     var itemContainer = document.getElementById(item.getId()); // NULL, wait for it to exist
-    console.log("pre error");
     var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
-    console.log("post error");
 
     for (var i = 0; i < elementList.length; ++i)
         elementList[i].style.display = "inline-block";
@@ -222,7 +215,12 @@ export class SessionPage {
     (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="inline";
     (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="none";
 
-    // Send changes to API (API: Check if the item ID exists, if not, create the item)
+    if(item.getId() == -1)
+      this.ioProvider.createItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity());
+    else
+      this.ioProvider.editItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity(), item.getId());
+
+
   }
 
   getItemIndex(arr, id: number) {
