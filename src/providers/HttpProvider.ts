@@ -27,12 +27,12 @@ export class HttpProvider {
     this.socket.on('sendItem', this.getItem);
   }
 
-  claimItem(session_id, user_id, item_id) {
-    this.socket.emit('claimItem', { session_id: session_id, user_id: user_id, item_id: item_id });
+  claimItem(session_id, user_id, quantity, item_id) {
+    this.socket.emit('claimItem', { session_id: session_id, user_id: user_id, quantity: quantity, item_id: item_id });
   }
 
-  createItem(session_id) {
-    this.socket.emit('createItem', { session_id: session_id });
+  createItem(session_id, price, name, quantity) {
+    this.socket.emit('createItem', { session_id: session_id, price: price, name: name, quantity: quantity });
   }
 
   deleteItem(session_id, item_id) {
