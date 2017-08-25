@@ -86,13 +86,13 @@ export class JoinSessionPage {
 
     console.log("Attempting to send a request to the server to join a session");
     return new Promise(function (resolve, reject) {
-      scope.httpProvider.joinSession(scope.session_id, input.nickname, input.color).then( (json) => {
+      scope.httpProvider.joinSession(scope.session_id.toLowerCase(), input.nickname, input.color).then( (json) => {
 
         var session_vars = JSON.parse(json.data);
-        var user_id = session_vars.user_id;
+        var user_id = session_vars.data.attributes.user_id;
 
         console.log("Successfully joined the session and retrieved the User ID: "+user_id);
-        resolve(session_vars.user_id);
+        resolve(user_id);
 
       }, (err) => { reject(err) });
     });
@@ -107,7 +107,7 @@ export class JoinSessionPage {
 
     console.log("Attempting to store the User ID");
     return new Promise(function (resolve, reject) {
-      scope.storage.set('user_id', input).then( (data) => {
+      scope.storage.set('user_id', input.toLowerCase()).then( (data) => {
 
         console.log("Successfully stored User ID: "+input);
         resolve(input);
@@ -124,10 +124,10 @@ export class JoinSessionPage {
 
     console.log("Attempting to store the Session ID");
     return new Promise(function (resolve, reject) {
-      scope.storage.set('session_id', scope.session_id).then( (data) => {
+      scope.storage.set('session_id', scope.session_id.toLowerCase()).then( (data) => {
 
-        console.log("Successfully stored User ID: "+scope.session_id);
-        resolve(scope.session_id);
+        console.log("Successfully stored Session ID: "+scope.session_id.toLowerCase());
+        resolve(scope.session_id.toLowerCase());
 
       }, (err) => { reject(err) });
     });

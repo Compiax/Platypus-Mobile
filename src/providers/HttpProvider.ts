@@ -3,8 +3,6 @@ import { HTTP } from '@ionic-native/http';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { File } from '@ionic-native/file';
 
-import * as io from 'socket.io-client';
-
 // API server URL
 const IP = 'http://192.168.43.144';
 const URL = IP+':3000/mobile';
@@ -19,33 +17,6 @@ export class HttpProvider {
   constructor(private http: HTTP, private transfer: FileTransfer, private file: File) {
     console.log("Http Provider Instantiated");
     this.fileTransfer = this.transfer.create();
-    this.socket = io(IP+':3002');
-    this.handleListeners();
-  }
-
-  handleListeners() {
-    this.socket.on('sendItem', this.getItem);
-  }
-
-  claimItem(session_id, user_id, quantity, item_id) {
-    this.socket.emit('claimItem', { session_id: session_id, user_id: user_id, quantity: quantity, item_id: item_id });
-  }
-
-  createItem(session_id, price, name, quantity) {
-    this.socket.emit('createItem', { session_id: session_id, price: price, name: name, quantity: quantity });
-  }
-
-  deleteItem(session_id, item_id) {
-    this.socket.emit('deleteItem', { session_id: session_id, item_id: item_id });
-  }
-
-  editItem(session_id, price, name, quantity, item_id) {
-    this.socket.emit('editItem', { session_id: session_id, price: price, name: name, quantity: quantity, item_id: item_id });
-  }
-
-  getItem(data) {
-      console.log("Got item: "+data);
-      // @todo Check if the item in data exists (ID). If it does replace it's information. Else add it to the items.
   }
 
   /**
@@ -97,12 +68,19 @@ export class HttpProvider {
       fileName: filename,
       mimeType: 'image/jpg',
       chunkedMode: false,
-      params: { "session_id":session_id }
+      params: { "session_id":session_id.toLowerCase() }
     };
     let url = URL+"/sendImage";
     console.log("Sending image data to "+URL+" server");
     return this.fileTransfer.upload(imageData, url, options);
+  }
 
+  getAllSessionData(session_id) {
+    let url = URL+"/getAllSessionData";
+    let data = {"session_id": session_id.toLowerCase()};
+    let responseJSON = this.http.post(url, data, HEADERS);
+    console.log("Returing response...");
+    return responseJSON;
   }
 
 }

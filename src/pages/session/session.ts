@@ -1,20 +1,32 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 import { Alert } from '../../providers/Alert';
-import { IOProvider } from '../../providers/IOProvider';
+
+// import { IOProvider } from '../../providers/IOProvider';
+
+import { HttpProvider } from '../../providers/HttpProvider';
+
+// SOCKET
+import * as io from 'socket.io-client';
 
 // Used for storing user data locally
 import { Storage } from '@ionic/storage';
 import { SESSION_PAGES } from '../../app/pages';
 import { Item } from '../../providers/Item';
 
+// SOCKET
+const SOCKET_IP = 'http://192.168.43.144:3002';
+
 @IonicPage()
 @Component({
   selector: 'page-session',
   templateUrl: 'session.html',
-  providers:[IOProvider, Alert]
+  providers:[/*IOProvider,*/ HttpProvider, Alert]
 })
 export class SessionPage {
+
+  // SOCKET
+  socket: SocketIOClient.Socket;
 
   pages = SESSION_PAGES;
   total: number;
@@ -29,7 +41,7 @@ export class SessionPage {
   activeColor: Object;
 
   maxId: number;
-
+  scope: any;
   selectedItems: string;
 
   constructor(
@@ -37,23 +49,30 @@ export class SessionPage {
     private navParams: NavParams,
     private storage: Storage,
     private alertService: Alert,
-    private ioProvider: IOProvider) {
-      this.items = new Array<Item>();
+    /*private ioProvider: IOProvider,*/
+    private httpProvider: HttpProvider) {
 
+      // SOCKET
+      this.socket = io(SOCKET_IP);
+      this.s_handleListeners();
+
+      this.items = new Array<Item>();
+      this.scope = this;
       this.maxId = 0;
 
-      this.items.push(new Item(43.50, 5, "Cheese Burger", 0));
-      this.items.push(new Item(24.90, 2, "Milkshake", 1));
-      this.items.push(new Item(18.00, 3, "Filter Coffee", 2));
-      this.items.push(new Item(25.90, 2, "Toasted Cheese", 3));
-      this.items.push(new Item(5.90, 1, "Extra Bacon", 4));
-      this.items.push(new Item(32.90, 1, "Chicken Wrap", 5));
+      // this.items.push(new Item(43.50, 5, "Cheese Burger", "m1t17uNaN"));
+      // this.items.push(new Item(24.90, 2, "Milkshake", 1));
+      // this.items.push(new Item(18.00, 3, "Filter Coffee", 2));
+      // this.items.push(new Item(25.90, 2, "Toasted Cheese", 3));
+      // this.items.push(new Item(5.90, 1, "Extra Bacon", 4));
+      // this.items.push(new Item(32.90, 1, "Chicken Wrap", 5));
 
       this.total = this.getTotal();
       this.gratuityPercent = 10;
 
       this.sessionOwner = "Duart";  // @todo Get this info from the server upon establishing a connection
       this.selectedItems = "all-items";
+
   }
 
   switchSegments(){
@@ -78,25 +97,22 @@ export class SessionPage {
     console.log('ionViewDidLoad SessionPage');
   }
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
 
-    this.loadResources()
-    .then(this.validateSession, this.redirectHome)
-    .then(this.validateUser, this.redirectHome)
-    .then(this.getAllSessionData, this.redirectHome)
-    .then(function(){}, this.redirectHome);
+    this.loadResources(this)
+    .then((data) => { this.validateSessionData(data, this) }, (err) => {this.redirectHome(err, this)})
+    .then((data) => { this.getAllSessionData(data, this) }, (err) => {this.redirectHome(err, this)})
+    .then((data) => {}, (err) => { this.redirectHome(err, this) });
 
-    this.loadResources();
   }
 
-  redirectHome(err?){
-    if(err != null)
-      console.log(err);
+  redirectHome(err, scope){
+    console.log(err);
     console.log("Redirecting home");
-    this.navCtrl.setRoot("HomePage");
+    scope.navCtrl.setRoot("HomePage");
   }
 
-  validateSession() {
+  validateSessionData(data, scope) {
     return new Promise(function (resolve, reject) {
       if(1 == 1) {
         console.log("Session validated");
@@ -108,50 +124,51 @@ export class SessionPage {
     });
   }
 
-  getAllSessionData(){
+  getAllSessionData(data, scope){
     return new Promise(function (resolve, reject) {
-      if(1 == 1) {
-        console.log("Session data received");
-        resolve("Session data received");
-      } else {
-        console.log("Session data retrievel broke");
-        reject(Error("Session data retrievel broke"));
-      }
+      scope.httpProvider.getAllSessionData(scope.session_id).then( (data) => {
+        scope.parseItems(data);
+        resolve();
+      }, (err) => {
+        reject(err);
+      });
     });
   }
 
-  validateUser(){
-    return new Promise(function (resolve, reject) {
-      if(1 == 1) {
-        console.log("User validated");
-        resolve("User validated");
-      } else {
-        console.log("User validation broke");
-        reject(Error("User validation broke"));
-      }
-    });
+  parseItems(json) {
+    var parsedData = JSON.parse(json.data);
+    console.log(parsedData.data.attributes);
+    console.log(parsedData.data.attributes.items[0].i_price+" "+parsedData.data.attributes.items[0].i_name+" "+parsedData.data.attributes.items[0].i_quantity+" "+parsedData.data.attributes.items[0].i_id);
+    for(var i = 0; i<parsedData.data.attributes.items.length; i++) {
+      this.items.push(new Item(
+        parsedData.data.attributes.items[i].i_price,
+        parsedData.data.attributes.items[i].i_quantity,
+        parsedData.data.attributes.items[i].i_name,
+        parsedData.data.attributes.items[i].i_id
+      ));
+    }
   }
 
-  loadResources() {
+  loadResources(scope) {
     return new Promise(function (resolve, reject) {
 
-      this.storage.get('session_id').then((data) => {
-        this.session_id = data;
-        this.storage.get('user_id').then((data) => {
-          this.user_id = data;
-          this.storage.get('nickname').then((data) => {
-            this.nickname = data;
-            this.storage.get('color').then((data) => {
-              this.color = data;
-              this.activeBackgroundColor = { 'background-color': this.color };
-              this.activeColor = { 'color': this.color };
-              console.log(this.color);
+      scope.storage.get('session_id').then((data) => {
+        console.log("TRACE: "+data);
+        scope.session_id = data;
+        scope.storage.get('user_id').then((data) => {
+          scope.user_id = data;
+          scope.storage.get('nickname').then((data) => {
+            scope.nickname = data;
+            scope.storage.get('color').then((data) => {
+              scope.color = data;
+              scope.activeBackgroundColor = { 'background-color': scope.color };
+              scope.activeColor = { 'color': scope.color };
+              console.log(scope.color);
               resolve();
             });
           });
         });
       });
-
     });
   }
 
@@ -163,23 +180,27 @@ export class SessionPage {
 
   deleteItem(item) {
     this.items.splice(this.items.indexOf(item), 1);
-    this.ioProvider.deleteItem(this.session_id, item.getId());
+    // this.ioProvider.deleteItem(this.session_id, item.getId());
+    this.s_deleteItem(this.session_id, item.getId());
   }
 
   addItem(item) {
     item.decrementQuantity();
-    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    // this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    this.s_claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   addAllItems(item) {
     while(item.getQuantity() != 0)
       item.decrementQuantity();
-    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    // this.ioProvider.unclaimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    this.s_unclaimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   removeItem(item) {
     item.incrementQuantity();
-    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    // this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    this.s_claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   editItemHandler(item, slider) {
@@ -192,35 +213,52 @@ export class SessionPage {
   editItem(item) {
 
     console.log("Editing: "+item.getName());
-    var itemContainer = document.getElementById(item.getId()); // NULL, wait for it to exist
-    var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
 
-    for (var i = 0; i < elementList.length; ++i)
-        elementList[i].style.display = "inline-block";
+    var checkExist = setInterval(function() {
+       if (document.getElementById(item.getId()) != null) {
+          clearInterval(checkExist);
 
-    (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="none";
-    (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="inline";
+          var itemContainer = document.getElementById(item.getId());
 
+          var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
+
+          for (var i = 0; i < elementList.length; ++i)
+              elementList[i].style.display = "inline-block";
+
+          (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="none";
+          (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="inline";
+
+       } else {
+         console.log("Waiting to edit item");
+       }
+    }, 100);
   }
 
-  closeEdit(item, e) {
+  closeEdit(item, event) {
 
     console.log("Closing: "+item.getName());
     var itemContainer = document.getElementById(item.getId());
-    var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
 
-    for (var i = 0; i < elementList.length; ++i)
-        elementList[i].style.display = "none";
+    if((<HTMLElement>itemContainer.querySelector(".card-drag")).style.display == "none") {
 
-    (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="inline";
-    (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="none";
+      var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
 
-    if(item.getId() == -1)
-      this.ioProvider.createItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity());
-    else
-      this.ioProvider.editItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity(), item.getId());
+      for (var i = 0; i < elementList.length; ++i)
+          elementList[i].style.display = "none";
 
+      (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="inline";
+      (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="none";
 
+      if(item.getId() == -1) {
+        // this.ioProvider.createItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity());
+        this.s_createItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity());
+        this.items.splice(this.items.indexOf(item), 1);
+      } else {
+        // this.ioProvider.editItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity(), item.getId());
+        this.s_editItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity(), item.getId());
+      }
+
+    }
   }
 
   getItemIndex(arr, id: number) {
@@ -233,9 +271,11 @@ export class SessionPage {
 
   getTotal() {
     var total = 0.0;
-    for(let item of this.items)
-      total += item.getPrice()*(item.getQuantity()+item.getMyQuantity());
-
+    for(let item of this.items){
+      var numberOfItems: number = item.getQuantity()+item.getMyQuantity();
+      total += item.getPrice()*numberOfItems;
+      // console.log(item.getPrice()+" "+item.getQuantity()+" "+item.getMyQuantity()+" "+item.getName()+" "+item.getPrice()*numberOfItems);
+    }
     return total;
   }
 
@@ -259,6 +299,61 @@ export class SessionPage {
     // @todo Ask the user if they're sure
     // @todo Inform the API this user is disconnecting
     this.navCtrl.setRoot("HomePage");
+  }
+
+
+  /*--------------------------*/
+  /*----------SOCKET---------*/
+  /*--------------------------*/
+  s_handleListeners() {
+    this.socket.on('sendItem', (data) => {console.log("TRACE: Detected change"); this.s_getItem(data, this); });
+  }
+
+  s_claimItem(session_id, user_id, quantity, item_id) {
+    console.log("claimItem: Emitting: "+session_id+", "+user_id+", "+quantity+", "+item_id);
+    this.socket.emit('claimItem', { session_id: session_id, user_id: user_id, quantity: quantity, item_id: item_id });
+  }
+
+  s_unclaimItem(session_id, user_id, quantity, item_id) {
+    console.log("claimItem: Emitting: "+session_id+", "+user_id+", "+quantity+", "+item_id);
+    this.socket.emit('unclaimItem', { session_id: session_id, user_id: user_id, quantity: quantity, item_id: item_id });
+  }
+
+  s_createItem(session_id, price, name, quantity) {
+    console.log("createItem: Emitting: "+session_id+", "+price+", "+name+", "+quantity);
+    this.socket.emit('createItem', { session_id: session_id, price: price, name: name, quantity: quantity });
+  }
+
+  s_deleteItem(session_id, item_id) {
+    console.log("deleteItem: Emitting: "+session_id+", "+item_id);
+    this.socket.emit('deleteItem', { session_id: session_id, item_id: item_id });
+  }
+
+  s_editItem(session_id, price, name, quantity, item_id) {
+    console.log("editItem: Emitting: "+session_id+", "+price+", "+name+", "+quantity+", "+item_id);
+    this.socket.emit('editItem', { session_id: session_id, price: price, name: name, quantity: quantity, item_id: item_id });
+  }
+
+  s_getItem(parsedData, scope) {
+    var isFound = false;
+    console.log("Got item: ");
+    console.log(parsedData);
+    console.log(this.session_id+" "+parsedData.data.attributes.session_id);
+    if(scope.session_id == parsedData.data.attributes.session_id) {
+      for(let itemIter of scope.items) {
+        if(itemIter.getId() == parsedData.data.attributes.item.i_id) {
+          console.log("Editing old item");
+          isFound = true;
+          itemIter.setPrice(parsedData.data.attributes.item.i_price);
+          itemIter.setName(parsedData.data.attributes.item.i_name);
+          itemIter.setQuantity(parsedData.data.attributes.item.i_quantity);
+        }
+      }
+      if(!isFound) {
+        console.log("Adding new item");
+        scope.items.push(new Item(parsedData.data.attributes.item.i_price, parsedData.data.attributes.item.i_quantity, parsedData.data.attributes.item.i_name, parsedData.data.attributes.item.i_id));
+      }
+    }
   }
 
 }

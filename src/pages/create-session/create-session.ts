@@ -61,7 +61,7 @@ export class CreateSessionPage {
           console.log("Success: "+data);
 
           console.log("Redirecting to SessionPage");
-          this.navCtrl.setRoot("SessionPage");
+          thisPage.navCtrl.setRoot("SessionPage");
 
           // console.log("Cleaning up");
           // thisPage.camera.cleanup().then((data) => {
@@ -110,10 +110,10 @@ export class CreateSessionPage {
           var session_vars = JSON.parse(json.data);
 
           console.log("createSession Response JSON: "+session_vars);
-          var session_id = session_vars.data.attributes.session_id;
-          console.log("createSession Response JSON session_id: "+session_id);
-          var user_id = session_vars.data.attributes.user_id;
-          console.log("createSession Response JSON user_id: "+user_id);
+          var session_id = session_vars.data.attributes.session_id.toLowerCase();
+          console.log("createSession Response JSON session_id: "+session_id.toLowerCase());
+          var user_id = session_vars.data.attributes.user_id.toLowerCase();
+          console.log("createSession Response JSON user_id: "+user_id.toLowerCase());
 
           thisPage.storeCreateSessionResponse(session_id, user_id);
 
@@ -133,6 +133,7 @@ export class CreateSessionPage {
     var thisPage = this;
     thisPage.timeout.startTimeout("store session ID locally");
     thisPage.storage.set('session_id', session_id).then( (data) => {
+      console.log("Stored session ID: "+session_id);
 
       thisPage.timeout.endTimeout();
 

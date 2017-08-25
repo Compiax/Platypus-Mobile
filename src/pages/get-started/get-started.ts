@@ -41,9 +41,6 @@ export class GetStartedPage {
     if(this.nickname != "" && this.nickname != null) { this.storage.set('nickname', this.nickname); }
     this.storage.set('color', this.color);
 
-    // DELETE IN DEVELOPEMENT
-    // this.navCtrl.setRoot("SessionPage");
-
     this.navCtrl.setRoot("HomePage");
   }
 
@@ -51,7 +48,7 @@ export class GetStartedPage {
   ionViewWillEnter() {
 
     // Delete for production
-    this.storage.clear();
+    // this.storage.clear();
 
     this.storage.length().then( length => {
       if(length >= 2)
