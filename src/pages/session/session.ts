@@ -246,8 +246,6 @@ export class SessionPage {
   editItem(item) {
 
     console.log("Editing: "+item.getName());
-    var itemContainer = document.getElementById(item.getId());
-    var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
 
     var intervalId = setInterval(function() {
       if(itemContainer != null) {
