@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 import { Alert } from '../../providers/Alert';
-import { IOProvider } from '../../providers/IOProvider';
 
 import { IOProvider } from '../../providers/IOProvider';
 import { HttpProvider } from '../../providers/HttpProvider';
@@ -247,20 +246,20 @@ export class SessionPage {
   editItem(item) {
 
     console.log("Editing: "+item.getName());
-    var itemContainer = document.getElementById(item.getId()); // NULL, wait for it to exist
+    var itemContainer = document.getElementById(item.getId());
     var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
 
-    for (var i = 0; i < elementList.length; ++i)
-        elementList[i].style.display = "inline-block";
+    var intervalId = setInterval(function() {
+      if(itemContainer != null) {
+        clearInterval(intervalId);
 
-          var itemContainer = document.getElementById(item.getId());
-          var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
+        var itemContainer = document.getElementById(item.getId());
+        var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
+        for (var i = 0; i < elementList.length; ++i)
+          elementList[i].style.display = "inline-block";
 
-          for (var i = 0; i < elementList.length; ++i)
-              elementList[i].style.display = "inline-block";
-
-          (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="none";
-          (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="inline";
+        (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="none";
+        (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="inline";
 
        } else {
          console.log("Waiting to edit item");
@@ -298,7 +297,6 @@ export class SessionPage {
       }
 
     }
-  }
 
   // getItemIndex(arr, id: number) {
   //   for(var i = 0; i<arr.length; i++){
