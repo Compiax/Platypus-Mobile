@@ -12,7 +12,6 @@ const HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'};
 export class HttpProvider {
 
   fileTransfer: FileTransferObject;
-  socket: SocketIOClient.Socket;
 
   constructor(private http: HTTP, private transfer: FileTransfer, private file: File) {
     console.log("Http Provider Instantiated");

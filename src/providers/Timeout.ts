@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { Alert } from './Alert';
 
-const TIMEOUT_LIMIT: any = 10000;
+const TIMEOUT_LIMIT: any = 60000;
 
 @Injectable()
 export class Timeout {
