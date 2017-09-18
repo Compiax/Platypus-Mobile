@@ -60,6 +60,9 @@ export class CreateSessionPage {
           thisPage.timeout.endTimeout();
           console.log("Success: "+data);
 
+          console.log("Redirecting to SessionPage");
+          thisPage.navCtrl.setRoot("SessionPage");
+
           // console.log("Cleaning up");
           // thisPage.camera.cleanup().then((data) => {
           //   console.log("Clean up successful");
@@ -107,14 +110,13 @@ export class CreateSessionPage {
           var session_vars = JSON.parse(json.data);
 
           console.log("createSession Response JSON: "+session_vars);
-          var session_id = session_vars.data.attributes.session_id;
-          console.log("createSession Response JSON session_id: "+session_id);
-          var user_id = session_vars.data.attributes.user_id;
-          console.log("createSession Response JSON user_id: "+user_id);
+          var session_id = session_vars.data.attributes.session_id.toLowerCase();
+          console.log("createSession Response JSON session_id: "+session_id.toLowerCase());
+          var user_id = session_vars.data.attributes.user_id.toLowerCase();
+          console.log("createSession Response JSON user_id: "+user_id.toLowerCase());
 
           thisPage.storeCreateSessionResponse(session_id, user_id);
 
-          thisPage.captureImage(session_id);
         });
       });
     });
@@ -131,6 +133,7 @@ export class CreateSessionPage {
     var thisPage = this;
     thisPage.timeout.startTimeout("store session ID locally");
     thisPage.storage.set('session_id', session_id).then( (data) => {
+      console.log("Stored session ID: "+session_id);
 
       thisPage.timeout.endTimeout();
 
@@ -139,8 +142,7 @@ export class CreateSessionPage {
 
         thisPage.timeout.endTimeout();
 
-        //console.log("Redirecting to JoinSessionPage");
-        //thisPage.navCtrl.push('SessionPage', {session_id: session_id});
+        thisPage.captureImage(session_id);
 
       }, (err) => {
         console.log("Storing user_id "+user_id+" in local storage failed...");

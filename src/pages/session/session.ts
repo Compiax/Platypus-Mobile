@@ -5,14 +5,21 @@ import { Alert } from '../../providers/Alert';
 import { IOProvider } from '../../providers/IOProvider';
 import { HttpProvider } from '../../providers/HttpProvider';
 
+// SOCKET
+import * as io from 'socket.io-client';
+
 import { Storage } from '@ionic/storage';
 import { SESSION_PAGES } from '../../app/pages';
 import { Item } from '../../providers/Item';
+
+// SOCKET
+const SOCKET_IP = 'http://192.168.43.144:3002';
 
 @IonicPage()
 @Component({
   selector: 'page-session',
   templateUrl: 'session.html',
+
   providers:[IOProvider, HttpProvider, Alert]
 })
 export class SessionPage {
@@ -32,7 +39,7 @@ export class SessionPage {
   activeColor: Object;
 
   maxId: number;
-
+  scope: any;
   selectedItems: string;
 
   constructor(
@@ -40,6 +47,7 @@ export class SessionPage {
     private navParams: NavParams,
     private storage: Storage,
     private alertService: Alert,
+
     private ioProvider: IOProvider,
     private httpProvider: HttpProvider) {
 
@@ -48,6 +56,12 @@ export class SessionPage {
 
       this.items = new Array<Item>();
 
+      // SOCKET
+      this.socket = io(SOCKET_IP);
+      this.s_handleListeners();
+
+      this.items = new Array<Item>();
+      this.scope = this;
       this.maxId = 0;
 
       this.total = this.getTotal();
@@ -55,6 +69,7 @@ export class SessionPage {
 
       this.sessionOwner = "Duart";  // @todo Get this info from the server upon establishing a connection
       this.selectedItems = "all-items";
+
   }
 
   /**
@@ -119,6 +134,7 @@ export class SessionPage {
     });
   }
 
+  
   /**
    * Gets the initial session data from the server
    * @param  {any} scope The parent scope resolution
@@ -126,13 +142,12 @@ export class SessionPage {
    */
   getAllSessionData(scope){
     return new Promise(function (resolve, reject) {
-      if(1 == 1) {
-        console.log("Session data received");
-        resolve("Session data received");
-      } else {
-        console.log("Session data retrievel broke");
-        reject(Error("Session data retrievel broke"));
-      }
+      scope.httpProvider.getAllSessionData(scope.session_id).then( (data) => {
+        scope.parseItems(data);
+        resolve();
+      }, (err) => {
+        reject(err);
+      });
     });
   }
 
@@ -178,7 +193,6 @@ export class SessionPage {
           });
         });
       });
-
     });
   }
 
@@ -197,7 +211,8 @@ export class SessionPage {
    */
   deleteItem(item) {
     this.items.splice(this.items.indexOf(item), 1);
-    this.ioProvider.deleteItem(this.session_id, item.getId());
+    // this.ioProvider.deleteItem(this.session_id, item.getId());
+    this.s_deleteItem(this.session_id, item.getId());
   }
 
   /**
@@ -206,7 +221,8 @@ export class SessionPage {
    */
   addItem(item) {
     item.decrementQuantity();
-    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    // this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    this.s_claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   /**
@@ -225,7 +241,8 @@ export class SessionPage {
    */
   removeItem(item) {
     item.incrementQuantity();
-    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    // this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    this.s_claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   /**
@@ -265,6 +282,7 @@ export class SessionPage {
     }, 100);
   }
 
+  
   /**
    * Closes the edit inputs and buttons
    * @param  {any} item  The item which is being edited]
@@ -273,19 +291,16 @@ export class SessionPage {
 
     console.log("Closing: "+item.getName());
     var itemContainer = document.getElementById(item.getId());
-    var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
 
-    for (var i = 0; i < elementList.length; ++i)
-        elementList[i].style.display = "none";
+    if((<HTMLElement>itemContainer.querySelector(".card-drag")).style.display == "none") {
 
-    (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="inline";
-    (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="none";
+      var elementList = <NodeListOf<HTMLElement>>itemContainer.querySelectorAll(".edit-item-input");
 
-    if(item.getId() == -1)
-      this.ioProvider.createItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity());
-    else
-      this.ioProvider.editItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity(), item.getId());
+      for (var i = 0; i < elementList.length; ++i)
+          elementList[i].style.display = "none";
 
+      (<HTMLElement>itemContainer.querySelector(".card-drag")).style.display="inline";
+      (<HTMLElement>itemContainer.querySelector(".card-confirm")).style.display="none";
 
       if(item.getId() == -1) {
         this.ioProvider.createItem(this.session_id, item.getPrice(), item.getName(), item.getQuantity());
