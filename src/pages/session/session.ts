@@ -5,21 +5,14 @@ import { Alert } from '../../providers/Alert';
 import { IOProvider } from '../../providers/IOProvider';
 import { HttpProvider } from '../../providers/HttpProvider';
 
-// SOCKET
-import * as io from 'socket.io-client';
-
 import { Storage } from '@ionic/storage';
 import { SESSION_PAGES } from '../../app/pages';
 import { Item } from '../../providers/Item';
-
-// SOCKET
-const SOCKET_IP = 'http://192.168.43.144:3002';
 
 @IonicPage()
 @Component({
   selector: 'page-session',
   templateUrl: 'session.html',
-
   providers:[IOProvider, HttpProvider, Alert]
 })
 export class SessionPage {
@@ -55,10 +48,6 @@ export class SessionPage {
       this.handleSocketListeners();
 
       this.items = new Array<Item>();
-
-      // SOCKET
-      this.socket = io(SOCKET_IP);
-      this.s_handleListeners();
 
       this.items = new Array<Item>();
       this.scope = this;
@@ -134,7 +123,7 @@ export class SessionPage {
     });
   }
 
-  
+
   /**
    * Gets the initial session data from the server
    * @param  {any} scope The parent scope resolution
@@ -211,8 +200,7 @@ export class SessionPage {
    */
   deleteItem(item) {
     this.items.splice(this.items.indexOf(item), 1);
-    // this.ioProvider.deleteItem(this.session_id, item.getId());
-    this.s_deleteItem(this.session_id, item.getId());
+    this.ioProvider.deleteItem(this.session_id, item.getId());
   }
 
   /**
@@ -221,8 +209,7 @@ export class SessionPage {
    */
   addItem(item) {
     item.decrementQuantity();
-    // this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
-    this.s_claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   /**
@@ -241,8 +228,7 @@ export class SessionPage {
    */
   removeItem(item) {
     item.incrementQuantity();
-    // this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
-    this.s_claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
+    this.ioProvider.claimItem(this.session_id, this.user_id, item.getMyQuantity(), item.getId());
   }
 
   /**
@@ -262,9 +248,12 @@ export class SessionPage {
    */
   editItem(item) {
 
-    console.log("Editing: "+item.getName());
+    console.log("Editing: "+item.getName()+", ID: "+item.getId());
 
     var intervalId = setInterval(function() {
+
+      var itemContainer = document.getElementById(item.getId());
+
       if(itemContainer != null) {
         clearInterval(intervalId);
 
@@ -282,7 +271,7 @@ export class SessionPage {
     }, 100);
   }
 
-  
+
   /**
    * Closes the edit inputs and buttons
    * @param  {any} item  The item which is being edited]
@@ -310,14 +299,7 @@ export class SessionPage {
       }
 
     }
-
-  // getItemIndex(arr, id: number) {
-  //   for(var i = 0; i<arr.length; i++){
-  //     if(arr[i].getId() == id)
-  //       return i;
-  //   }
-  //   return -1;
-  // }
+  }
 
   /**
    * Returns the total of the bill/reciept
