@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar color="primary" class="split-bill-nav">
+    <ion-title>Profile</ion-title>
+    <img src="assets/logos/nav-logo.png"/>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding text-center>
+
+  <ion-list class="ion-list">
+    <ion-item class="input-box" color="primary">
+      <ion-label class="grey-text" floating>Nickname</ion-label>
+      <ion-input type="text" color="accents02" [value]="nickname" [(ngModel)]="nickname"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <div class="color-picker">
+    <h2>Choose a color</h2>
+    <div>
+      <div class="color-picker-item color-picker-item-1 active" (click)="selectedColor($event)">
+        <input id="option-1" type="radio" name="color-picker" value="option"/>
+        <label for="option-1"></label>
+      </div>
+      <div class="color-picker-item color-picker-item-2" (click)="selectedColor($event)">
+        <input id="option-2" type="radio" name="color-picker" value="option"/>
+        <label for="option-2"></label>
+      </div>
+      <div class="color-picker-item color-picker-item-3" (click)="selectedColor($event)">
+        <input id="option-3" type="radio" name="color-picker" value="option"/>
+        <label for="option-3"></label>
+      </div>
+    </div>
+    <div>
+      <div class="color-picker-item color-picker-item-4" (click)="selectedColor($event)">
+        <input id="option-4" type="radio" name="color-picker" value="option"/>
+        <label for="option-4"></label>
+      </div>
+      <div class="color-picker-item color-picker-item-5" (click)="selectedColor($event)">
+        <input id="option-5" type="radio" name="color-picker" value="option"/>
+        <label for="option-5"></label>
+      </div>
+      <div class="color-picker-item color-picker-item-6" (click)="selectedColor($event)">
+        <input id="option-6" type="radio" name="color-picker" value="option"/>
+        <label for="option-6"></label>
+      </div>
+    </div>
+
+  </div>
+
+  <div offset-8 col-4>
+    <button ion-button (click)="dismiss()" [ngStyle]="activeColor">Done</button>
+  </div>
+
+</ion-content>

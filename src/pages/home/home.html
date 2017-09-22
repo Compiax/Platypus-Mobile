@@ -1,0 +1,30 @@
+
+<ion-header>
+  <ion-navbar #content color="primary" class="split-bill-nav">
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <img src="assets/logos/nav-logo.png"/>
+  </ion-navbar>
+</ion-header>
+
+<ion-menu [content]="content" class="menu">
+  <ion-content>
+    <ion-list>
+      <button menuClose ion-item color="accents01" *ngFor="let p of pages" (click)="openModal(p.component)">
+        {{p.title}}
+      </button>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-content ion-row padding text-center>
+  <div col-12>
+    <p text-center class="greeting">
+      <span class="hello">Hello,</span>
+      <span class="first-letter"><div [ngStyle]="activeColor"></div>{{ nicknameFirstLetter }}</span>
+      {{ nicknameOtherLetters }}
+    </p>
+  </div>
+
+  <div col-12><button ion-button (click)="openPage('CreateSessionPage')">Create Session</button></div>
+  <div col-12><button ion-button (click)="openPage('JoinSessionPage')">Join Session</button></div>
+</ion-content>

@@ -1,0 +1,40 @@
+$bright-colors: (#f26f81,#3dc4a1,#ad80da,#fea576,#f9f273,#73c2f9);
+
+body .begin-title {
+  font-size: 28pt;
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+}
+
+body .color-picker .color-picker-item label {
+  border-radius: 50px;
+  width: 80%;
+  height: 80%;
+  margin: 0;
+  display: inline-block;
+  margin-top: 10%;
+}
+body .color-picker .color-picker-item {
+  display: inline-block;
+  background-color: rgba(0,0,0,0);
+  border-radius: 50px;
+  border: 1px solid rgba(0,0,0,0);
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  margin: 10px;
+}
+body .color-picker .color-picker-item input {
+  display: none;
+}
+body .color-picker .active {
+  border-color:  map-get($colors, "light");
+}
+
+$i: 1;
+@each $color in $bright-colors {
+  .color-picker-item-#{$i} label {
+    background-color: $color;
+  }
+  $i: $i+1;
+}
